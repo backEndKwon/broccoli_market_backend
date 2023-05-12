@@ -11,6 +11,24 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
+      
+      this.hasOne(models.Users_Info, { 
+        sourceKey: 'user_id', 
+        foreignKey: 'user_id',
+      });
+      this.hasMany(models.Products, { 
+        sourceKey: 'user_id', 
+        foreignKey: 'user_id', 
+      });
+      this.hasMany(models.Likes, { 
+        sourceKey: 'user_id', 
+        foreignKey: 'user_id', 
+      });
+      this.hasMany(models.Chats, { 
+        sourceKey: 'user_id', 
+        foreignKey: 'buyer_id', 
+      });
     }
   }
   User.init({
