@@ -27,46 +27,41 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
       },
       user_id: {
         allowNull: false,
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Users",
-          key: "user_id",
-        },
-        onDelete: "CASCADE",
+        type: DataTypes.INTEGER,
       },
       email: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
       },
       address: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
       },
       sold_item: {
         allowNull: false,
-        type: Sequelize.TEXT,
+        type: DataTypes.TEXT,
       },
       likes: {
         allowNull: false,
-        type: Sequelize.TEXT,
+        type: DataTypes.TEXT,
       },
       bought_item: {
         allowNull: false,
-        type: Sequelize.TEXT,
+        type: DataTypes.TEXT,
       },
       created_at: {
         allowNull: false,
-        defaultValue: Sequelize.fn("now"),
-        type: Sequelize.DATE,
+        defaultValue: DataTypes.NOW,
+        type: DataTypes.DATE,
       },
       updated_at: {
         allowNull: false,
-        defaultValue: Sequelize.fn("now"),
-        type: Sequelize.DATE,
+        defaultValue: DataTypes.NOW,
+        type: DataTypes.DATE,
       },
     },
     {
