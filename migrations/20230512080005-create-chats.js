@@ -16,7 +16,6 @@ module.exports = {
           model: "Users",
           key: "user_id",
         },
-        onDelete: "CASCADE",
       },
       product_id: {
         allowNull: false,
@@ -25,7 +24,6 @@ module.exports = {
           model: "Products",
           key: "product_id",
         },
-        onDelete: "CASCADE",
       },
       content: {
         allowNull: false,

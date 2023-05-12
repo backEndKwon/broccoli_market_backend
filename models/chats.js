@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Chats extends Model {
     /**
@@ -10,16 +8,59 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Users, {
+        targetKey: "user_id",
+        foreignKey: "buyer_id",
+      });
+      this.belongsTo(models.Products, {
+        targetKey: "product_id",
+        foreignKey: "product_id",
+      });
     }
   }
-  Chats.init({
-    buyer_id: DataTypes.INTEGER,
-    product_id: DataTypes.INTEGER,
-    content: DataTypes.TEXT
-  }, {
-    sequelize,
-    modelName: 'Chats',
-  });
+  Chats.init(
+    {
+      chat_id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      buyer_id: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+        references: {
+          model: "Users",
+          key: "user_id",
+        },
+      },
+      product_id: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+        references: {
+          model: "Products",
+          key: "product_id",
+        },
+      },
+      content: {
+        allowNull: false,
+        type: DataTypes.TEXT,
+      },
+      created_at: {
+        allowNull: false,
+        defaultValue: DataTypes.fn("now"),
+        type: DataTypes.DATE,
+      },
+      updated_at: {
+        allowNull: false,
+        defaultValue: DataTypes.fn("now"),
+        type: DataTypes.DATE,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Chats",
+    }
+  );
   return Chats;
 };
