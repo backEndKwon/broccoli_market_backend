@@ -15,7 +15,7 @@
 <br>● mig: migration
 <br>● 제목은 50자 미만, 문장의 끝에 마침표 넣지 않음. 과거 시제 사용하지 않고, 명령어로 작성하도록 함.
 제목 외에 추가적으로 정보를 전달하고 싶을 경우 본문에 추가 정보 기입
-<br>* 예시 : [feat] comment router CRUD 기능 추가 : 본인 이름
+<br>* 예시 : feat: comment router CRUD 기능 추가 : 본인 이름
 
 <br><h3># branch</h3>
 ● 각 기능 브랜치에서 작업 후 push —> develop 브랜치에 merge는 pull requests를 통해서 하기
