@@ -53,6 +53,7 @@ module.exports = {
       },
       views: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
       },
       is_sold: {
         allowNull: false,
