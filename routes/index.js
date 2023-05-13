@@ -13,5 +13,4 @@ router.use("/chat", [chatRouter]);
 router.use("/mypage", [mypageRouter]);
 router.use("/like", [likeRouter]);
 
-
 module.exports = router;
