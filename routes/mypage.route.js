@@ -18,3 +18,4 @@ router.post("/buy", authMiddleware, mypageController.getMyBuyProducts);
 // router.patch("/", mypageController.patchMyInfo);
 //  DELETE: 계정 삭제
 // router.delete("/", mypageController.deleteMyInfo);
+module.exports = router;
