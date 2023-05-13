@@ -1,8 +1,8 @@
 const { Products, Likes } = require("../models");
 
 class MypageRepository {
+  
   /* 1.판매 중인 + 구매한  상품 목록조회 */
-
   getMySoldBuyProducts = async (user_id) => {
     const getMySoldBuyProducts = await Products.findByPk(user_id);
 
