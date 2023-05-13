@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const productRouter = require("./product.route");
+const productRouter = require("./products.route");
 const authRouter = require("./auth.route");
-const chatRouter = require("./chat.route");
+const chatRouter = require("./chats.route");
 const mypageRouter = require("./mypage.route");
-const likeRouter = require("./like.route")
+
 
 router.use("/product", [productRouter,likeRouter]);
 router.use("/auth", [authRouter]);
