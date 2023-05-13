@@ -22,9 +22,8 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  Likes.init(
-    {
-      likes_id: {
+  Likes.init({
+    likes_id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -38,12 +37,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.INTEGER,
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         defaultValue: DataTypes.NOW,
         type: DataTypes.DATE,
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         defaultValue: DataTypes.NOW,
         type: DataTypes.DATE,
