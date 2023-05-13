@@ -34,7 +34,7 @@ app.use(
 const apiMainRouter = require("./routes/index");
 app.use("/api", [apiMainRouter]);
 
-errorHandler
+// errorHandler
 app.use(errorHandler);
 
 app.get("/", (req, res) => {

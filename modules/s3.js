@@ -3,7 +3,7 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
 const { v1 } = require('uuid');
-const { s3 } = require("./config/config");
+const { s3 } = require("../config/config");
 
 const credentials = new aws.S3({
   region: s3.region,
