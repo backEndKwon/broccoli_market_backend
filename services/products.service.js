@@ -43,7 +43,7 @@ class ProductsService {
         category: product.category,
         likes: product.likes,
         views: product.views,
-        created_at: product.created_at,
+        createdAt: product.createdAt,
         is_sold: product.is_sold,
         photo_ip: product.photo_ip,
       };
@@ -55,9 +55,11 @@ class ProductsService {
     if (!product) {
       const error = new Error();
       error.errorCode = 404;
-      error.message = "상품이 존재하지 않습니다.";
+      error.message = '상품이 존재하지 않습니다.';
       throw error;
     }
+
+    await this.productsRepository.hitsProduct(product_id);
 
     return {
       title: product.title,
@@ -68,8 +70,8 @@ class ProductsService {
       chat_count: product.chat_count,
       likes: product.likes,
       views: product.views,
-      created_at: product.created_at,
-      updated_at: product.updated_at,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
       is_sold: product.is_sold,
       photo_ip: product.photo_ip,
     };
@@ -89,13 +91,13 @@ class ProductsService {
     if (!product) {
       const error = new Error();
       error.errorCode = 404;
-      error.message = "상품이 존재하지 않습니다.";
+      error.message = '상품이 존재하지 않습니다.';
       throw error;
     }
     if (product.user_id !== user_id) {
       const error = new Error();
       error.errorCode = 403;
-      error.message = "상품 수정 권한이 존재하지 않습니다.";
+      error.message = '상품 수정 권한이 존재하지 않습니다.';
       throw error;
     }
     await this.productsRepository.updateProduct(
@@ -126,18 +128,40 @@ class ProductsService {
     if (!product) {
       const error = new Error();
       error.errorCode = 404;
-      error.message = "상품이 존재하지 않습니다.";
+      error.message = '상품이 존재하지 않습니다.';
       throw error;
     }
     if (product.user_id !== user_id) {
       const error = new Error();
       error.errorCode = 403;
-      error.message = "상품 삭제 권한이 없습니다.";
+      error.message = '상품 삭제 권한이 없습니다.';
       throw error;
     }
 
     await this.productsRepository.deleteProduct(product_id);
   };
+
+//   searchProduct = async (keyword) => {
+    
+//     const keywords = keyword.split(" ");
+
+//     const result = await this.productsRepository.searchProduct(keywords);
+
+//     return result.map((product) => {
+//       return {
+//         product_id: product.product_id,
+//         title: product.title,
+//         address: product.address,
+//         price: product.price,
+//         category: product.category,
+//         likes: product.likes,
+//         views: product.views,
+//         createdAt: product.createdAt,
+//         is_sold: product.is_sold,
+//         photo_ip: product.photo_ip
+//       }
+//     });
+//   };
 }
 
 module.exports = ProductsService;

@@ -17,7 +17,7 @@ router.get('/', productsController.getAllProduct);
 router.get('/:product_id', productsController.getOneProduct);
 
 // 중고거래 상품 수정
-router.patch('/:product_id', productsController.updateProduct);
+router.patch('/:product_id', uploadImage.single('photo'), productsController.updateProduct);
 
 // 중고거래 상품 삭제
 router.delete('/:product_id', productsController.deleteProduct);
@@ -25,7 +25,7 @@ router.delete('/:product_id', productsController.deleteProduct);
 // 중고거래 상품 거래 완료
 // router.post('/product_id/sold', productsController.soldProduct);
 
-// 중고거래 상품 거래 검색
+// 중고거래 상품 검색
 // router.get('/search', productsController.searchProduct);
 
 // 관련 게시물 조회

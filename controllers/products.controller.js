@@ -46,6 +46,10 @@ class ProductsController {
   getOneProduct = async (req, res, next) => {
     try {
       const { product_id } = req.params;
+      
+      if (product_id === 'search') {
+        return next();
+      }
 
       const product = await this.productsService.findOneProduct(product_id);
 
@@ -98,6 +102,19 @@ class ProductsController {
       next(error, req, res, '상품 삭제에 실패하였습니다.');
     }
   };
+
+  // 중고거래 상품 검색
+  // searchProduct = async (req, res, next) => {
+  //   try {
+  //     const keyword = req.query.keyword;
+      
+  //     const result = await this.productsService.searchProduct(keyword);
+
+  //     return res.status(200).json({ result });
+  //   } catch (error) {
+  //     next(error, req, res, '상품 검색에 실패하였습니다.');
+  //   }
+  // }
 }
 
 module.exports = ProductsController;

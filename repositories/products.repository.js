@@ -43,6 +43,13 @@ class ProductsRepository {
     });
   };
 
+  hitsProduct = async (product_id) => {
+    await this.model.increment(
+      { views: +1 },
+      { where: {product_id} }
+    )
+  }
+
   updateProduct = async (product_id, title, content, price, category, photo_ip) => {
     return await this.model.update(
       { title, content, price, category, photo_ip },
@@ -55,6 +62,22 @@ class ProductsRepository {
       { where: { product_id } }
     );
   };
+
+  // searchProduct = async (keywords) => {
+  //   const results = [];
+
+  //   for (const keyword of keywords) {
+  //     const query = {
+  //       where: {
+  //         text: {
+  //           contains: keyword,
+  //         },
+  //       },
+  //     };
+  //     results.push(await this.model.findAll(query));
+  //   } 
+  //   return results;
+  // }
 }
 
 module.exports = ProductsRepository;
