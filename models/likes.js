@@ -1,9 +1,7 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Products extends Model {
+  class Likes extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -12,20 +10,21 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
-      this.belongsTo(models.Users, { 
-        targetKey: 'user_id', 
-        foreignKey: 'user_id', 
+      this.belongsTo(models.Users, {
+        targetKey: "user_id",
+        foreignKey: "user_id",
         onDelete: "CASCADE",
       });
-      this.belongsTo(models.Products, { 
-        targetKey: 'product_id', 
-        foreignKey: 'product_id', 
+      this.belongsTo(models.Products, {
+        targetKey: "product_id",
+        foreignKey: "product_id",
         onDelete: "CASCADE",
       });
     }
   }
-  Products.init({
-    likes_id: {
+  Likes.init(
+    {
+      likes_id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -41,17 +40,19 @@ module.exports = (sequelize, DataTypes) => {
       },
       created_at: {
         allowNull: false,
-        defaultValue: DataTypes.fn("now"),
+        defaultValue: DataTypes.NOW,
         type: DataTypes.DATE,
       },
       updated_at: {
         allowNull: false,
-        defaultValue: DataTypes.fn("now"),
+        defaultValue: DataTypes.NOW,
         type: DataTypes.DATE,
       },
-  }, {
-    sequelize,
-    modelName: 'Likes',
-  });
+    },
+    {
+      sequelize,
+      modelName: "Likes",
+    }
+  );
   return Likes;
 };

@@ -31,11 +31,11 @@ app.use(
 // app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // router
-// const apiMainRouter = require("./routes/index");
-// app.use("/api", [apiMainRouter]);
+const apiMainRouter = require("./routes/index");
+app.use("/api", [apiMainRouter]);
 
-// errorHandler
-// app.use(errorHandler);
+errorHandler
+app.use(errorHandler);
 
 app.get("/", (req, res) => {
   res.send("APIs for Voyage Blog");
