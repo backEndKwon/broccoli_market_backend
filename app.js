@@ -34,7 +34,7 @@ const apiMainRouter = require("./routes/index");
 app.use("/api", [apiMainRouter]);
 
 // errorHandler
-app.use(errorHandler);
+// app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`running http://localhost:${port}`);

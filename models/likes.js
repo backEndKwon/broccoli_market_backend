@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Products extends Model {
+  class Likes extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  Products.init({
+  Likes.init({
     likes_id: {
         allowNull: false,
         autoIncrement: true,
@@ -41,12 +41,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       created_at: {
         allowNull: false,
-        defaultValue: DataTypes.fn("now"),
+        defaultValue: DataTypes.NOW,
         type: DataTypes.DATE,
       },
       updated_at: {
         allowNull: false,
-        defaultValue: DataTypes.fn("now"),
+        defaultValue: DataTypes.NOW,
         type: DataTypes.DATE,
       },
   }, {
