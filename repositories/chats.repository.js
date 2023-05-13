@@ -42,9 +42,37 @@ class ChatRepository {
     }
   };
 
-  getMyOneChat = async (chat_id) => {};
+  getMyOneChat = async (chat_id) => {
+    try {
+      const chatContents = await this.chatsModel.findOne({
+        include: [
+          {
+            model: Products,
+            attributes: [],
+            required: true,
+          },
+        ],
+        attributes: [
+          "updatedAt",
+          "content",
+          "chat_id",
+          [Sequelize.literal("`Product`.`user_id`"), "seller_id"],
+          [Sequelize.literal("`Product`.`product_id`"), "product_id"],
+          [Sequelize.literal("`Product`.`title`"), "title"],
+          [Sequelize.literal("`Product`.`is_sold`"), "is_sold"],
+        ],
+        where: { chat_id },
+      });
 
-  saveChatContents = async (chat_id) => {};
+      return chatContents;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  saveChatContents = async (chat_id, content) => {
+
+  };
 }
 
 module.exports = ChatRepository;

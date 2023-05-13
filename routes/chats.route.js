@@ -10,10 +10,10 @@ router.get("/", chatController.getMyAllChats);
 // POST: 새로운 1:1 채팅 생성
 router.post("/:product_id", chatController.createNewChat);
 
-// // GET: 1:1 채팅 내역 조회
-// router.get("/:chat_id", chatController.getMyOneChat);
+// GET: 1:1 채팅 내역 조회
+router.get("/:chat_id", chatController.getMyOneChat);
 
-// // PATCH: 1:1 채팅 내역 저장
-// router.patch("/:chat_id", chatController.saveChatContents);
+// PATCH: 1:1 채팅 내역 저장
+router.patch("/:chat_id", chatController.saveChatContents);
 
 module.exports = router;
