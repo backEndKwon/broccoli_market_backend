@@ -1,6 +1,6 @@
-const errorWithCode = require("../utils/error");
+const errorWithCode = require('../utils/error');
 const ProductsService = require('../services/products.service');
-const {productSchema, commentSchema} = require('./joi');
+const { productSchema } = require('./joi');
 
 class ProductsController {
   productsService = new ProductsService();
@@ -11,9 +11,7 @@ class ProductsController {
       // const { userId, id } = res.locals.user;
       const user_id = 1;
       const id = 'test';
-      const { value, error } = productSchema.validate(
-        req.body
-      );
+      const { value, error } = productSchema.validate(req.body);
       if (error) {
         return res.status(412).json({ errorMessage: error.message });
       }
@@ -68,9 +66,7 @@ class ProductsController {
       // const { nickname } = res.locals.user;
       const user_id = 1;
       const id = 'test';
-      const { value, error } = productSchema.validate(
-        req.body
-      );
+      const { value, error } = productSchema.validate(req.body);
       if (error) {
         return res.status(412).json({ errorMessage: error.message });
       }
@@ -82,10 +78,10 @@ class ProductsController {
         value.content,
         value.price,
         value.category,
-        value.photo_ip,
+        value.photo_ip
       );
 
-      return res.status(200).json({updateProduct});
+      return res.status(200).json({ updateProduct });
     } catch (e) {
       e.failedApi = '상품 수정';
       next(e);

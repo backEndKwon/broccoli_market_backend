@@ -3,11 +3,12 @@ const router = express.Router();
 
 const ProductsController = require('../controllers/products.controller');
 // const authMiddleware = require("../middlewares/auth-middleware");
+const uploadImage = require('../modules/s3.js');
 
 const productsController = new ProductsController();
 
 // 중고거래 상품 생성
-router.post('/', productsController.createProduct);
+router.post('/', uploadImage.single('photo'), productsController.createProduct);
 
 // 중고거래 상품 전체 조회
 router.get('/', productsController.getAllProduct);
