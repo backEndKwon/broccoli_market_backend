@@ -1,6 +1,7 @@
 const LikeService = require("../services/like.service");
 
 class LikeController {
+  
   likeService = new LikeService();
 
   putLikes = async (req, res, next) => {

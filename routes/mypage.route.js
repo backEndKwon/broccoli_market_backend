@@ -13,8 +13,8 @@ router.get("/likes", authMiddleware, mypageController.getMyLikeProducts);
 // GET: 자신이 (is_sold:false)구매 확정한 내역
 router.post("/buy", authMiddleware, mypageController.getMyBuyProducts);
 
-// //시간 여유 있다면 구현해보기
+// 시간 여유 있다면 구현해보기
 // // PATCH: 프로필 개인정보 수정
 // router.patch("/", mypageController.patchMyInfo);
-// // DELETE: 계정 삭제
+//  DELETE: 계정 삭제
 // router.delete("/", mypageController.deleteMyInfo);

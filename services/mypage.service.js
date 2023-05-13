@@ -1,6 +1,7 @@
 const MypageRepository = require("../repositories/mypage.repository");
 
 class MypageService {
+  
   mypageRepository = new MypageRepository();
   /* 1.판매 중인 + 구매한  상품 목록조회 */
   getMySoldBuyProducts = async (user_id) => {

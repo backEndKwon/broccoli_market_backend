@@ -1,6 +1,7 @@
 const { Products, Likes } = require("../models");
 
 class LikeRepository {
+ 
   /* Product 존재확인용 */
   existProduct = async (post_id) => {
     const existProduct = await Products.findByPk(post_id);

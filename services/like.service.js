@@ -1,6 +1,7 @@
 const LikeRepository = require("../repositories/like.repository");
 
 class LikeService {
+  
   likeRepository = new LikeRepository();
  
   /* Product 존재확인용 */
