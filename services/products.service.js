@@ -1,4 +1,3 @@
-const errorWithCode = require('../utils/error');
 const ProductsRepository = require('./../repositories/products.repository');
 const { Products, Users_info } = require('./../models/');
 
