@@ -5,4 +5,6 @@ const LikeController = require("../controllers/like.controller.js");
 const likeController = new LikeController();
 
 // 관심 설정 API
-router.put("/product/:product_id", authMiddleware, likeController.putLikes);
+router.put("/:product_id/likes", authMiddleware, likeController.putLikes);
+
+module.exports = router;

@@ -7,11 +7,10 @@ const chatRouter = require("./chat.route");
 const mypageRouter = require("./mypage.route");
 const likeRouter = require("./like.route")
 
-router.use("/product", [productRouter]);
+router.use("/product", [productRouter,likeRouter]);
 router.use("/auth", [authRouter]);
 router.use("/chat", [chatRouter]);
 router.use("/mypage", [mypageRouter]);
-router.use("/like", [likeRouter]);
 
 
 module.exports = router;
