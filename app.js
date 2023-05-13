@@ -2,10 +2,10 @@ const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const app = express();
-// const errorHandler = require("./middlewares/error-handler");
+const errorHandler = require("./middlewares/errorHandler");
 const { host } = require("./config/config");
 const port = host.port;
-// const swaggerUi = require("swagger-ui-express");
+const swaggerUi = require("swagger-ui-express");
 // const swaggerFile = require("./swagger-output");
 const cors = require("cors");
 
@@ -34,7 +34,7 @@ const apiMainRouter = require("./routes/index");
 app.use("/api", [apiMainRouter]);
 
 // errorHandler
-// app.use(errorHandler);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`running http://localhost:${port}`);

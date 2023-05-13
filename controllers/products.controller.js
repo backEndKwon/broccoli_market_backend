@@ -1,5 +1,6 @@
+const errorWithCode = require("../utils/error");
 const ProductsService = require('../services/products.service');
-const Validation = require('./joi');
+const {productSchema, commentSchema} = require('./joi');
 
 class ProductsController {
   productsService = new ProductsService();
@@ -10,7 +11,7 @@ class ProductsController {
       // const { userId, id } = res.locals.user;
       const user_id = 1;
       const id = 'test';
-      const { value, error } = Validation.validate(
+      const { value, error } = productSchema.validate(
         req.body
       );
       if (error) {
@@ -28,7 +29,7 @@ class ProductsController {
 
       return res.status(201).json({ message: '상품 생성 완료' });
     } catch (e) {
-      e.failedApi = '게시글 작성';
+      e.failedApi = '상품 생성';
       next(e);
     }
   };
@@ -41,7 +42,7 @@ class ProductsController {
       return res.status(200).json({ products });
     } catch (e) {
       console.log(e);
-      e.failedApi = '게시글 조회';
+      e.failedApi = '상품 조회';
       next(e);
     }
   };
@@ -55,62 +56,58 @@ class ProductsController {
 
       return res.status(200).json({ product });
     } catch (e) {
-      e.failedApi = '게시글 상세 조회';
+      e.failedApi = '상품 상세 조회';
       next(e);
     }
   };
 
-//   // 중고거래 상품 수정
-//   updateProduct = async (req, res, next) => {
-//     try {
-//       if (
-//         Object.keys(req.body).length < 2 &&
-//         Object.keys(req.body).length > 3
-//       ) {
-//         throw errorWithCode(412, '데이터 형식이 올바르지 않습니다.');
-//       }
+  // 중고거래 상품 수정
+  updateProduct = async (req, res, next) => {
+    try {
+      const { product_id } = req.params;
+      // const { nickname } = res.locals.user;
+      const user_id = 1;
+      const id = 'test';
+      const { value, error } = productSchema.validate(
+        req.body
+      );
+      if (error) {
+        return res.status(412).json({ errorMessage: error.message });
+      }
+      const updateProduct = await this.productsService.updateProduct(
+        product_id,
+        user_id,
+        id,
+        value.title,
+        value.content,
+        value.price,
+        value.category,
+        value.photo_ip,
+      );
 
-//       const { _postId } = req.params;
-//       const { title, content, tag } = req.body;
-//       const { nickname } = res.locals.user;
+      return res.status(200).json({updateProduct});
+    } catch (e) {
+      e.failedApi = '상품 수정';
+      next(e);
+    }
+  };
 
-//       if (!title || title === '') {
-//         throw errorWithCode(412, '게시글 제목의 형식이 올바르지 않습니다.');
-//       }
+  // 중고거래 상품 삭제
+  deleteProduct = async (req, res, next) => {
+    try {
+      const { product_id } = req.params;
+      // const { id } = res.locals.user;
+      const user_id = 1;
+      const id = 'test';
 
-//       if (!content || content === '') {
-//         throw errorWithCode(412, '게시글 내용의 형식이 올바르지 않습니다.');
-//       }
+      await this.productsService.deleteProduct(product_id, user_id, id);
 
-//       await this.postsService.updatePost(
-//         _postId,
-//         title,
-//         content,
-//         tag,
-//         nickname
-//       );
-
-//       return res.status(200).end();
-//     } catch (e) {
-//       e.failedApi = '게시글 수정';
-//       next(e);
-//     }
-//   };
-
-//   // 중고거래 상품 삭제
-//   deleteProduct = async (req, res, next) => {
-//     try {
-//       const { _postId } = req.params;
-//       const { nickname } = res.locals.user;
-
-//       await this.postsService.deletePost(nickname, _postId);
-
-//       return res.status(200).end();
-//     } catch (e) {
-//       e.failedApi = '게시글 삭제';
-//       next(e);
-//     }
-//   };
+      return res.status(200).json({ message: '상품 삭제 완료' });
+    } catch (e) {
+      e.failedApi = '상품 삭제';
+      next(e);
+    }
+  };
 }
 
 module.exports = ProductsController;

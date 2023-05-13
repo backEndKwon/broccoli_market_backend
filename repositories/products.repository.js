@@ -43,19 +43,18 @@ class ProductsRepository {
     });
   };
 
-//   updateProduct = async (_postId, title, content) => {
-//     return await this.model.update(
-//       { title, content },
-//       { where: { postId: _postId } }
-//     );
-//   };
+  updateProduct = async (product_id, title, content, price, category, photo_ip) => {
+    return await this.model.update(
+      { title, content, price, category, photo_ip },
+      { where: { product_id } }
+    );
+  };
 
-//   deleteProduct = async (nickname, _postId) => {
-//     return await this.model.update(
-//       { status: false },
-//       { where: { nickname, postId: _postId } }
-//     );
-//   };
+  deleteProduct = async (product_id) => {
+    return await this.model.destroy(
+      { where: { product_id } }
+    );
+  };
 }
 
 module.exports = ProductsRepository;

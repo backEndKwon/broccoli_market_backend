@@ -1,3 +1,4 @@
+const errorWithCode = require("../utils/error");
 const ProductsRepository = require('./../repositories/products.repository');
 const { Products, Users_info } = require('./../models/');
 
@@ -45,7 +46,7 @@ class ProductsService {
   findOneProduct = async (product_id) => {
     const product = await this.productsRepository.getOneProduct(product_id);
     if (!product) {
-      throw new Error('게시글이 존재하지 않습니다.');
+        throw errorWithCode(404, '상품이 존재하지 않습니다.');
     }
 
     return {
@@ -64,29 +65,39 @@ class ProductsService {
     };
   };
 
-//   updateProduct = async (_postId, title, content, tag, nickname) => {
-//     const post = await this.productsRepository.getOnePost(_postId);
-//     if (!post) {
-//       throw errorWithCode(404, '게시글이 존재하지 않습니다.');
-//     }
-//     if (post.nickname !== nickname) {
-//       throw errorWithCode(403, '게시글 수정 권한이 존재하지 않습니다.');
-//     }
+  updateProduct = async (product_id, user_id, id, title, content, price, category, photo_ip) => {
+    const product = await this.productsRepository.getOneProduct(product_id);
+    if (!product) {
+      throw errorWithCode(404, '상품이 존재하지 않습니다.');
+    }
+    if (product.user_id !== user_id) {
+      throw errorWithCode(403, '상품 수정 권한이 존재하지 않습니다.');
+    }
+    await this.productsRepository.updateProduct(product_id, title, content, price, category, photo_ip);
 
-//     await this.postsRepository.updateProduct(_postId, title, content);
-//   };
+    const updateProduct = await this.productsRepository.getOneProduct(product_id);
 
-//   deleteProduct = async (nickname, _postId) => {
-//     const post = await this.postsRepository.getOnePost(_postId);
-//     if (!post) {
-//       throw errorWithCode(404, '게시글이 존재하지 않습니다.');
-//     }
-//     if (post.nickname !== nickname) {
-//       throw errorWithCode(403, '게시글 수정 권한이 존재하지 않습니다.');
-//     }
+    return {
+        product_id: updateProduct.product_id,
+        user_id: updateProduct.user_id,
+        title: updateProduct.title,
+        content: updateProduct.content,
+        price: updateProduct.price,
+        photo_ip: updateProduct.photo_ip
+    }
+  };
 
-//     await this.postsRepository.deleteProduct(nickname, _postId);
-//   };
+  deleteProduct = async (product_id, user_id, id) => {
+    const product = await this.productsRepository.getOneProduct(product_id);
+    if (!product) {
+      throw errorWithCode(404, '상품이 존재하지 않습니다.');
+    }
+    if (product.user_id !== user_id) {
+      throw errorWithCode(403, '상품 삭제 권한이 없습니다.');
+    }
+
+    await this.productsRepository.deleteProduct(product_id);
+  };
 }
 
 module.exports = ProductsService;
