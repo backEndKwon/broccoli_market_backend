@@ -54,7 +54,10 @@ class ProductsService {
   findOneProduct = async (product_id) => {
     const product = await this.productsRepository.getOneProduct(product_id);
     if (!product) {
-      throw errorWithCode(404, '상품이 존재하지 않습니다.');
+      const error = new Error();
+      error.errorCode = 404;
+      error.message = "상품이 존재하지 않습니다.";
+      throw error;
     }
 
     return {
@@ -85,10 +88,16 @@ class ProductsService {
   ) => {
     const product = await this.productsRepository.getOneProduct(product_id);
     if (!product) {
-      throw errorWithCode(404, '상품이 존재하지 않습니다.');
+      const error = new Error();
+      error.errorCode = 404;
+      error.message = "상품이 존재하지 않습니다.";
+      throw error;
     }
     if (product.user_id !== user_id) {
-      throw errorWithCode(403, '상품 수정 권한이 존재하지 않습니다.');
+      const error = new Error();
+      error.errorCode = 403;
+      error.message = "상품 수정 권한이 존재하지 않습니다.";
+      throw error;
     }
     await this.productsRepository.updateProduct(
       product_id,
@@ -116,10 +125,16 @@ class ProductsService {
   deleteProduct = async (product_id, user_id, id) => {
     const product = await this.productsRepository.getOneProduct(product_id);
     if (!product) {
-      throw errorWithCode(404, '상품이 존재하지 않습니다.');
+      const error = new Error();
+      error.errorCode = 404;
+      error.message = "상품이 존재하지 않습니다.";
+      throw error;
     }
     if (product.user_id !== user_id) {
-      throw errorWithCode(403, '상품 삭제 권한이 없습니다.');
+      const error = new Error();
+      error.errorCode = 403;
+      error.message = "상품 삭제 권한이 없습니다.";
+      throw error;
     }
 
     await this.productsRepository.deleteProduct(product_id);
