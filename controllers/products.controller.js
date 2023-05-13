@@ -1,4 +1,3 @@
-const errorWithCode = require('../utils/error');
 const ProductsService = require('../services/products.service');
 const { productSchema } = require('./joi');
 
