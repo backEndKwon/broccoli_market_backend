@@ -23,7 +23,7 @@ router.patch("/:product_id", productsController.updateProduct);
 router.delete("/:product_id", productsController.deleteProduct);
 
 // 중고거래 상품 거래 완료
-// router.post('/product_id/sold', productsController.soldProduct);
+router.patch('/:product_id/sold', productsController.makeProductSold);
 
 // 중고거래 상품 거래 검색
 // router.get('/search', productsController.searchProduct);

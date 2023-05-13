@@ -55,6 +55,13 @@ class ProductsRepository {
       { where: { product_id } }
     );
   };
+
+  makeProductSold = async (product_id) => {
+    return await this.model.update(
+      { is_sold: true },
+      { where: { product_id } }
+    );
+  }
 }
 
 module.exports = ProductsRepository;
