@@ -10,7 +10,7 @@ module.exports = async (req, res, next) => {
     }
 
     try {
-        const decodedToken = jwt.verify(authToken, "secretkeywhatever");
+        const decodedToken = jwt.verify(authToken, process.env.SECRET_KEY);
         const userId = decodedToken.userId;
 
         const user = await Users.findOne({ where: { userId }});
@@ -22,8 +22,37 @@ module.exports = async (req, res, next) => {
         res.locals.user = user;
         next();
     } catch (error){
-        return res.status(403).json({
-            errormessage : "전달된 쿠키에서 오류가 발생하였습니다."
-        })
+        if (error.name === "TokenExpiredError") {
+            const refreshToken = req.cookies.refreshToken;
+            const decodedRefreshToken = jwt.verify(
+                refreshToken,
+                process.env.REFRESH_SECRET_KEY
+            );
+            const userId = decodedRefreshToken.userId;
+
+            const user = await Users.findOne({ where: { userId } });
+            if (!user) {
+                return res.status(401).json({
+                    errormessage: "리프레시 토큰에 해당하는 사용자가 존재하지 않습니다.",
+                });
+            }
+
+            const newAccessToken = jwt.sign(
+                { userId: user.userId },
+                process.env.SECRET_KEY,
+                { expiresIn: "2h" }
+            );
+
+            res.cookie("authorization", `Bearer ${newAccessToken}`, {
+                httpOnly: true,
+                secure: true,
+            });
+            res.locals.user = user;
+            return next();
+        } else {
+            return res.status(403).json({
+                errormessage: "전달된 쿠키에서 오류가 발생하였습니다.",
+            });
+        }
     }
-}
+};
