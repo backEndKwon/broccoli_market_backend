@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const { Sequelize } = require("sequelize");
+const { Users, Products } = require("../models");
 
 class ChatRepository {
   constructor(ChatsModel) {
@@ -11,13 +12,8 @@ class ChatRepository {
       const chatLists = await this.chatsModel.findAll({
         include: [
           {
-            model: Users,
-            attributes: ["nickname", "user_id"],
-            required: true,
-          },
-          {
             model: Products,
-            attributes: ["product_id", "title", "is_sold"],
+            attributes: ["user_id", "product_id", "title", "is_sold"],
             required: true,
           },
         ],
@@ -39,6 +35,7 @@ class ChatRepository {
         buyer_id,
         content: JSON.stringify([]),
       });
+
       return newChat;
     } catch (error) {
       throw error;

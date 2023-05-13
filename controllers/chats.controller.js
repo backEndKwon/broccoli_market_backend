@@ -6,7 +6,7 @@ class ChatController {
   // GET: 자신의 전체 채팅 목록 조회
   getMyAllChats = async (req, res, next) => {
     try {
-      const user_id = 1; // test
+      const user_id = 2; // test
       const chatLists = await this.chatService.getMyAllChats(user_id);
       res.status(200).json({ chatLists });
     } catch (error) {
@@ -18,9 +18,9 @@ class ChatController {
   createNewChat = async (req, res, next) => {
     const { product_id } = req.params;
     // const { user_id } = res.locals.user;
-    const user_id = 1; // test
+    const user_id = 2; // test
     try {
-      const newChat = await this.chatService.createNewChat(product_id, user_id);
+      const newChat = await this.chatService.createNewChat(parseInt(product_id), user_id);
       res.status(201).json({ newChat });
     } catch (error) {
       next(error, req, res, "새로운 채팅 생성에 실패하였습니다.");
