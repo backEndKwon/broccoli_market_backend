@@ -5,10 +5,10 @@ const app = express();
 const errorHandler = require("./middlewares/errorHandler");
 const { host } = require("./config/config");
 const port = host.port;
-const { Server } = require("socket.io");
 const swaggerUi = require("swagger-ui-express");
 // const swaggerFile = require("./swagger-output");
 const cors = require("cors");
+const { emitWarning } = require("process");
 
 // parser
 app.use(express.urlencoded({ extended: false }));
@@ -18,7 +18,7 @@ app.use(cookieParser());
 // logger
 app.use(morgan("dev"));
 
-// cors
+cors
 app.use(
   cors({
     origin: "*",
@@ -37,12 +37,29 @@ app.use(
 // errorHandler
 // app.use(errorHandler);
 
+app.get("/", (req, res) => {
+  res.send("APIs for Voyage Blog");
+});
+
 const server = app.listen(port, () => {
   console.log(`running http://localhost:${port}`);
 });
 
 // socket
-const io = new Server(server);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("새로운 소켓이 연결됐어요!");
+
+  socket.on("message", (data) => {
+    console.log(data);
+  });
+});
 
 io.on("connection", (socket) => {
   // 서버와 클라이언트 간의 실시간 통신을 위해 "connection" 이벤트를 등록
