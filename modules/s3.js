@@ -3,12 +3,12 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
 const { v1 } = require('uuid');
+const { s3 } = require("./config/config");
 
-require('dotenv').config();
 const credentials = new aws.S3({
-  region: process.env.AWS_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: s3.region,
+  accessKeyId: s3.accessKeyId,
+  secretAccessKey: s3.secretAccessKey,
 });
 
 const allowedExtensions = ['.jpg', '.jpeg', '.png', '.bmp', '.gif'];
