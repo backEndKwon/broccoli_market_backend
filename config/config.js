@@ -27,5 +27,10 @@ const bcrypt = {
 const host = {
   port: parseInt(env.HOST_PORT),
 };
+const s3 = {
+  region: process.env.AWS_REGION,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+}
 
-module.exports = { development, test, jwt, bcrypt, host };
+module.exports = { development, test, jwt, bcrypt, host, s3 };
