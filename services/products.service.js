@@ -60,7 +60,10 @@ class ProductsService {
     }
 
     const category = product.category;
-    const relatedProduct = await this.productsRepository.findRelatedProduct(category, product_id);
+    const relatedProduct = await this.productsRepository.findRelatedProduct(
+      category,
+      product_id
+    );
 
     await this.productsRepository.hitsProduct(product_id);
 
@@ -147,27 +150,26 @@ class ProductsService {
     await this.productsRepository.deleteProduct(product_id);
   };
 
-//   searchProduct = async (keyword) => {
-    
-//     const keywords = keyword.split(" ");
+  searchProduct = async (keyword) => {
+    const keywords = keyword.split(' ');
 
-//     const result = await this.productsRepository.searchProduct(keywords);
+    const result = await this.productsRepository.searchProduct(keywords);
 
-//     return result.map((product) => {
-//       return {
-//         product_id: product.product_id,
-//         title: product.title,
-//         address: product.address,
-//         price: product.price,
-//         category: product.category,
-//         likes: product.likes,
-//         views: product.views,
-//         createdAt: product.createdAt,
-//         is_sold: product.is_sold,
-//         photo_ip: product.photo_ip
-//       }
-//     });
-//   };
+    return result.map((product) => {
+      return {
+        product_id: product.product_id,
+        title: product.title,
+        address: product.address,
+        price: product.price,
+        category: product.category,
+        likes: product.likes,
+        views: product.views,
+        createdAt: product.createdAt,
+        is_sold: product.is_sold,
+        photo_ip: product.photo_ip,
+      };
+    });
+  };
 }
 
 module.exports = ProductsService;

@@ -78,7 +78,7 @@ class ProductsRepository {
       { views: +1 },
       { where: {product_id} }
     )
-  }
+  };
 
   updateProduct = async (product_id, title, content, price, category, photo_ip) => {
     return await this.model.update(
@@ -93,17 +93,19 @@ class ProductsRepository {
     );
   };
 
-  // searchProduct = async (keywords) => {
-  //     const query = {
-  //       where: {
-  //         title: {
-  //           [Op.substring]: keywords,
-  //         }
-  //       },
-  //     };
-  //     const results = await this.model.findAll(query);
-  //   return results;
-  // }
+  searchProduct = async (keywords) => {
+      const query = {
+        where: {
+          title: {
+            [Op.or] : keywords.map((keyword) => ({
+              [Op.substring]: [keyword],
+            })),
+          }
+        },
+      };
+      const results = await this.model.findAll(query);
+    return results;
+  };
 }
 
 module.exports = ProductsRepository;
