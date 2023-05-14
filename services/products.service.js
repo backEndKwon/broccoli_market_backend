@@ -1,8 +1,8 @@
 const ProductsRepository = require('./../repositories/products.repository');
-const { Products, Users_info } = require('./../models/');
+const { Products, Users, Users_info } = require('./../models/');
 
 class ProductsService {
-  productsRepository = new ProductsRepository(Products, Users_info);
+  productsRepository = new ProductsRepository(Products, Users, Users_info);
 
   createProduct = async (
     user_id,
@@ -65,6 +65,8 @@ class ProductsService {
     await this.productsRepository.hitsProduct(product_id);
 
     return {
+      product_id: product.product_id,
+      id: product.User.id,
       title: product.title,
       content: product.content,
       address: product.Users_info.address,

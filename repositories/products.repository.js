@@ -2,8 +2,9 @@ const { Op } = require('sequelize');
 // const { post } = require('superagent');
 
 class ProductsRepository {
-  constructor(model, usersInfoModel) {
+  constructor(model, usersModel, usersInfoModel) {
     this.model = model;
+    this.usersModel = usersModel;
     this.usersInfoModel = usersInfoModel;
   }
 
@@ -36,6 +37,10 @@ class ProductsRepository {
       where: { product_id },
       include: [
         {
+          model: this.usersModel,
+          attributes: ['id'],
+        },
+        {
           model: this.usersInfoModel,
           attributes: ['address'],
         },
@@ -47,15 +52,17 @@ class ProductsRepository {
     return await this.model.findAll({
       where: {
         category,
-        // product_id: {
-        //   [Op.notIn]: product_id
-        // }
+        is_sold: false,
+        product_id: {
+          [Op.notIn]: [product_id]
+        }
       },
       attributes: [
         'product_id',
-        'user_id',
         'title',
         'price',
+        'likes',
+        'views'
       ],
       include: [
         {
