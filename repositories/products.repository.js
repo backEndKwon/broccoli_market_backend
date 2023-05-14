@@ -31,9 +31,32 @@ class ProductsRepository {
     });
   };
 
-  getOneProduct = async (product_id) => {
+  findDetailProduct = async (product_id) => {
     return await this.model.findOne({
       where: { product_id },
+      include: [
+        {
+          model: this.usersInfoModel,
+          attributes: ['address'],
+        },
+      ],
+    });
+  };
+
+  findRelatedProduct = async (category, product_id) => {
+    return await this.model.findAll({
+      where: {
+        category,
+        // product_id: {
+        //   [Op.notIn]: product_id
+        // }
+      },
+      attributes: [
+        'product_id',
+        'user_id',
+        'title',
+        'price',
+      ],
       include: [
         {
           model: this.usersInfoModel,
@@ -64,18 +87,14 @@ class ProductsRepository {
   };
 
   // searchProduct = async (keywords) => {
-  //   const results = [];
-
-  //   for (const keyword of keywords) {
   //     const query = {
   //       where: {
-  //         text: {
-  //           contains: keyword,
-  //         },
+  //         title: {
+  //           [Op.substring]: keywords,
+  //         }
   //       },
   //     };
-  //     results.push(await this.model.findAll(query));
-  //   } 
+  //     const results = await this.model.findAll(query);
   //   return results;
   // }
 }

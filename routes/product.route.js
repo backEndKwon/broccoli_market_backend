@@ -14,7 +14,7 @@ router.post('/', uploadImage.single('photo'), productsController.createProduct);
 router.get('/', productsController.getAllProduct);
 
 // 중고거래 상품 상세 조회
-router.get('/:product_id', productsController.getOneProduct);
+router.get('/:product_id', productsController.getDetailProduct);
 
 // 중고거래 상품 수정
 router.patch('/:product_id', uploadImage.single('photo'), productsController.updateProduct);
@@ -26,9 +26,6 @@ router.delete('/:product_id', productsController.deleteProduct);
 // router.post('/product_id/sold', productsController.soldProduct);
 
 // 중고거래 상품 검색
-// router.get('/search', productsController.searchProduct);
-
-// 관련 게시물 조회
-// router.get("?category=:category", productsController.relatedProduct);
+router.get('/search', productsController.searchProduct);
 
 module.exports = router;

@@ -43,7 +43,7 @@ class ProductsController {
   };
 
   // 중고거래 상품 상세 조회
-  getOneProduct = async (req, res, next) => {
+  getDetailProduct = async (req, res, next) => {
     try {
       const { product_id } = req.params;
       
@@ -51,7 +51,7 @@ class ProductsController {
         return next();
       }
 
-      const product = await this.productsService.findOneProduct(product_id);
+      const product = await this.productsService.findDetailProduct(product_id);
 
       return res.status(200).json({ product });
     } catch (error) {
@@ -115,6 +115,7 @@ class ProductsController {
   //     next(error, req, res, '상품 검색에 실패하였습니다.');
   //   }
   // }
+
 }
 
 module.exports = ProductsController;

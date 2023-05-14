@@ -50,14 +50,17 @@ class ProductsService {
     });
   };
 
-  findOneProduct = async (product_id) => {
-    const product = await this.productsRepository.getOneProduct(product_id);
+  findDetailProduct = async (product_id) => {
+    const product = await this.productsRepository.findDetailProduct(product_id);
     if (!product) {
       const error = new Error();
       error.errorCode = 404;
       error.message = '상품이 존재하지 않습니다.';
       throw error;
     }
+
+    const category = product.category;
+    const relatedProduct = await this.productsRepository.findRelatedProduct(category, product_id);
 
     await this.productsRepository.hitsProduct(product_id);
 
@@ -74,6 +77,7 @@ class ProductsService {
       updatedAt: product.updatedAt,
       is_sold: product.is_sold,
       photo_ip: product.photo_ip,
+      relatedProduct: relatedProduct,
     };
   };
 
