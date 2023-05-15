@@ -37,6 +37,7 @@
     "nodemailer": "^6.9.2",
     "path": "^0.12.7",
     "redis": "^4.6.6",
+    "s3": "^4.4.0",
     "sequelize": "^6.31.1",
     "socket.io": "^4.6.1",
     "swagger-autogen": "^2.23.1",
