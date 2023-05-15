@@ -1,5 +1,7 @@
 const ProductsRepository = require('./../repositories/products.repository');
 const { Products, Users_info } = require('./../models/');
+const { Transaction } = require("sequelize");
+const { sequelize } = require("../models");
 
 class ProductsService {
   productsRepository = new ProductsRepository(Products, Users_info);
@@ -138,6 +140,33 @@ class ProductsService {
 
     await this.productsRepository.deleteProduct(product_id);
   };
+
+  makeProductSold = async (product_id, user_id) => {
+    try {
+      await sequelize.transaction(
+        {
+          isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
+        },
+        async (t) => {
+          const product = await this.productsRepository.getOneProduct(product_id);
+          if (!product) {
+            const error = new Error();
+            error.errorCode = 404;
+            error.message = "상품이 존재하지 않습니다.";
+            throw error;
+          }
+          if (product.user_id !== user_id) {
+            const error = new Error();
+            error.errorCode = 403;
+            error.message = "상품 수정 권한이 존재하지 않습니다.";
+            throw error;
+          }
+          await this.productsRepository.makeProductSold(product_id);
+        })
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = ProductsService;
