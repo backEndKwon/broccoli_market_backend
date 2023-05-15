@@ -54,7 +54,7 @@ class AuthController {
     };
     
     signup = async (req, res) => {
-        const {id, nickname, password, email, address } = req.body;
+        const {id, nickname, password, email, address, authCode } = req.body;
         const redisSetResult = await redisClient.get(email)
         
         try {
@@ -65,12 +65,11 @@ class AuthController {
           const nicknameFilter = /^[A-Za-z0-9]{3,}$/.test(nickname);
           const emailFilter = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+$/.test(email);
     
-        // authCode이 클라이언트에서 생성되고 있는 상태로 ThunderClient에서 테스트 안 됨으로 주석처리
-        //   if (authCode !== redisSetResult) {
-        //     return res.status(400).json({
-        //        errorMessage: "인증코드가 일치하지 않습니다"
-        //     });
-        //  }
+        if (authCode !== redisSetResult) {
+            return res.status(400).json({
+               errorMessage: "인증코드가 일치하지 않습니다"
+            });
+         }
 
           if (existsUsers) {
             res.status(412).json({
@@ -163,10 +162,13 @@ class AuthController {
             `${userData.accessObject.type} ${userData.accessObject.token}`
           );
     
-          res.cookie("refreshToken", userData.refreshToken);
+          res.cookie(
+            "refreshToken",
+            `${userData.refreshObject.type} ${userData.refreshObject.token}`
+             );
           res.status(200).json({
             authorization: `${userData.accessObject.type} ${userData.accessObject.token}`,
-            refreshToken: userData.refreshToken,
+            refreshToken: `${userData.refreshObject.type} ${userData.refreshObject.token}`,
           });
         } catch (err) {
           console.error(err);

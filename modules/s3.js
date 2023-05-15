@@ -5,6 +5,7 @@ const path = require('path');
 const { v1 } = require('uuid');
 const { s3 } = require("../config/config.js");
 
+
 const credentials = new aws.S3({
   region: s3.region,
   accessKeyId: s3.accessKeyId,
