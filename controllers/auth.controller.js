@@ -15,7 +15,7 @@ class AuthController {
       
       try {
         const emailTemplate = await ejs.renderFile(appDir + '/template/authMail.ejs', { authCode: authNum });
-        const redisSetResult = await redisClient.SET(email, authNum, "EX", 300)
+        const redisSetResult = await redisClient.SETEX(email, 60, authNum )
           
         const transporter = nodemailer.createTransport({
           service: "naver",
@@ -55,7 +55,7 @@ class AuthController {
     
     signup = async (req, res) => {
         const {id, nickname, password, email, address, authCode } = req.body;
-        const redisSetResult = await redisClient.get(email)
+        const redisGetResult = await redisClient.get(email)
         
         try {
           const existsId = await this.authService.findOneUser(id);
@@ -65,7 +65,7 @@ class AuthController {
           const nicknameFilter = /^[A-Za-z0-9]{3,}$/.test(nickname);
           const emailFilter = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+$/.test(email);
     
-        if (authCode !== redisSetResult) {
+        if (authCode !== redisGetResult) {
             return res.status(400).json({
                errorMessage: "인증코드가 일치하지 않습니다"
             });

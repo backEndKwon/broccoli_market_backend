@@ -27,15 +27,15 @@ module.exports = {
         type: Sequelize.STRING,
       },
       sold_item: {
-        
+        allowNull: false,
         type: Sequelize.TEXT,
       },
       likes: {
-        
+        allowNull: false,
         type: Sequelize.TEXT,
       },
       bought_item: {
-        
+        allowNull: false,
         type: Sequelize.TEXT,
       },
       createdAt: {
