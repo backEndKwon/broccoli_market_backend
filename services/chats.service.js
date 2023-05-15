@@ -15,18 +15,25 @@ class ChatService {
         const { updatedAt, content, chat_id } = chat.dataValues;
         const { product_id, title, is_sold } = chat.Product;
         const seller_nickname = chat.Product.user_id; // nickname 찾기 함수 추가 후 수정 필요
-        
+
         // 경과 시간을 계산하기 위한 로직
-        const result = getPassedTime(updatedAt);
-        
+        const passedTime = getPassedTime(updatedAt);
+
+        // 최근 채팅 내용을 보여주기 위한 로직
+        const parsedContent = JSON.parse(content);
+        const lastestContent =
+          parsedContent.length > 0
+            ? parsedContent[parsedContent.length - 1].content
+            : "";
+
         return {
-          updatedAt: result,
+          updatedAt: passedTime,
           chat_id,
           seller_nickname,
           product_id,
           title,
           is_sold,
-          lastestContent: content[content.length - 1],
+          lastestContent,
         };
       });
       // console.log(myChats);
@@ -45,6 +52,8 @@ class ChatService {
         user_id
       );
 
+      // address 추가 필요
+
       return newChat;
     } catch (error) {
       throw error;
@@ -52,10 +61,45 @@ class ChatService {
   };
 
   // GET: 1:1 채팅 내역 조회
-  getMyOneChat = async (chat_id) => {};
+  getMyOneChat = async (chat_id) => {
+    try {
+      const chatContents = await this.chatRepository.getMyOneChat(chat_id);
+      const { updatedAt, seller_id, content } = chatContents.dataValues;
+      const passedTime = getPassedTime(updatedAt);
+      // const seller_nickname = await this.chatRepository.getSellerNickname(seller_id);
+
+      // address 받아야함
+      return {
+        updatedAt: passedTime,
+        chatContents: JSON.parse(content),
+        seller_nickname: seller_id, // seller_nickname으로 수정 필요
+        chat_id,
+        product_id,
+        title,
+        is_sold,
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
 
   // PATCH: 1:1 채팅 내역 저장
-  saveChatContents = async (chat_id) => {};
+  saveChatContents = async (chat_id, contents) => {
+    try {
+      // 각 객체 안에 createdAt을 추가합니다.
+      const chatContents = stringifiedContents.map((content) => ({
+        ...content,
+        createdAt: new Date(),
+      }))
+      const savedChat = await this.chatRepository.saveChatContents(
+        chat_id,
+        JSON.stringify(chatContents),
+      );
+      return savedChat;
+    } catch (error) {
+      throw error;
+    }
+  };
 }
 
 function getPassedTime(updatedAt) {

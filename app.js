@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
   });
   socket.on("disconnect", () => {
     //클라이언트와의 연결이 끊어질 때 "disconnect" 이벤트가 발생하도록 등록하고, 연결이 끊어졌을 때 로그를 출력
-    console.log(" User Disconnected", socket.id);
+    console.log("User Disconnected", socket.id);
   });
 });
 
