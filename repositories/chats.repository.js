@@ -33,9 +33,9 @@ class ChatRepository {
       const newChat = await this.chatsModel.create({
         product_id,
         buyer_id,
-        content: JSON.stringify([]),
+        content: JSON.stringify([]), // 일단 빈 배열을 넣어줌
       });
-
+      console.log("create 테스트", newChat);
       return newChat;
     } catch (error) {
       throw error;
@@ -55,7 +55,7 @@ class ChatRepository {
         attributes: [
           "updatedAt",
           "content",
-          [Sequelize.literal("`Product`.`user_id`"), "seller_id"],
+          "buyer_id",
           [Sequelize.literal("`Product`.`product_id`"), "product_id"],
           [Sequelize.literal("`Product`.`title`"), "title"],
           [Sequelize.literal("`Product`.`is_sold`"), "is_sold"],
@@ -69,12 +69,12 @@ class ChatRepository {
     }
   };
 
-  saveChatContents = async (chat_id, contents) => {
+  saveChatContents = async (chat_id, chatRecord) => {
     try {
       await this.chatsModel.update(
         {
           content: Sequelize.literal(
-            `JSON_ARRAY_APPEND(content, "$", '${JSON.stringify(contents)}')`
+            `JSON_ARRAY_APPEND(content, "$", '${JSON.stringify(chatRecord)}')`
           ),
         },
         { where: { chat_id } }
@@ -89,6 +89,17 @@ class ChatRepository {
       return await this.chatsModel.findOne({
         attributes: ["buyer_id"],
         where: { chat_id },
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  checkChatExists = async (product_id, buyer_id) => {
+    try {
+      return await this.chatsModel.findOne({
+        attributes: ["chat_id"],
+        where: { [Op.and]: [{ product_id }, { buyer_id }] },
       });
     } catch (error) {
       throw error;

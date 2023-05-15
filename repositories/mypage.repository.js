@@ -1,7 +1,6 @@
 const { Products, Likes } = require("../models");
 
 class MypageRepository {
-
   /* 1.판매 중인 + 구매한  상품 목록조회 */
   getMySoldProducts = async (user_id) => {
     const getMySoldProducts = await Products.findAll({
@@ -20,8 +19,11 @@ class MypageRepository {
 
   /* 3.자신이 좋아요누른 상품 목록조회 */
   getMyLikeProducts = async (user_id) => {
-    const fingMyLikeProductsId = await Likes.findByPk(user_id).post_id;
-    const getMyLikeProducts = await Products.findByPk(fingMyLikeProductsId);
+    const fingMyLikeProducts = await Likes.findAll({ where: { user_id } });
+    const ProductId = fingMyLikeProducts.map((a) => a.product_id);
+    const getMyLikeProducts = await Products.findAll({
+      where: { product_id: ProductId },
+    });
     return getMyLikeProducts;
   };
 }

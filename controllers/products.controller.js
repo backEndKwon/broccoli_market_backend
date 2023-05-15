@@ -1,5 +1,6 @@
 const ProductsService = require("../services/products.service");
 const { productSchema } = require("./joi");
+const es = require("@elastic/elasticsearch");
 
 class ProductsController {
   productsService = new ProductsService();
@@ -7,9 +8,7 @@ class ProductsController {
   // 중고거래 상품 생성
   createProduct = async (req, res, next) => {
     try {
-      // const { userId, id } = res.locals.user;
-      const user_id = 1;
-      const id = "test";
+      const { user_id, id } = res.locals.user;
       const { value, error } = productSchema.validate(req.body);
       if (error) {
         error.errorCode = 412;
@@ -43,11 +42,15 @@ class ProductsController {
   };
 
   // 중고거래 상품 상세 조회
-  getOneProduct = async (req, res, next) => {
+  getDetailProduct = async (req, res, next) => {
     try {
       const { product_id } = req.params;
 
-      const product = await this.productsService.findOneProduct(product_id);
+      if (product_id === 'search') {
+        return next();
+      }
+
+      const product = await this.productsService.findDetailProduct(product_id);
 
       return res.status(200).json({ product });
     } catch (error) {
@@ -59,10 +62,9 @@ class ProductsController {
   updateProduct = async (req, res, next) => {
     try {
       const { product_id } = req.params;
-      // const { nickname } = res.locals.user;
-      const user_id = 1;
-      const id = "test";
+      const { user_id, id } = res.locals.user;
       const { value, error } = productSchema.validate(req.body);
+
       if (error) {
         return res.status(412).json({ errorMessage: error.message });
       }
@@ -87,9 +89,7 @@ class ProductsController {
   deleteProduct = async (req, res, next) => {
     try {
       const { product_id } = req.params;
-      // const { id } = res.locals.user;
-      const user_id = 1;
-      const id = "test";
+      const { user_id, id } = res.locals.user;
 
       await this.productsService.deleteProduct(product_id, user_id, id);
 
@@ -102,8 +102,8 @@ class ProductsController {
   // 중고거래 상품 거래 완료
   makeProductSold = async (req, res, next) => {
     const { product_id } = req.params;
-    // const { user_id } = res.locals.user;
-    const user_id = 1;
+    const { user_id } = res.locals.user;
+
     try {
       await this.productsService.makeProductSold(product_id, user_id);
       return res.status(200).json({ message: "상품 거래 완료" });
@@ -111,6 +111,55 @@ class ProductsController {
       next(error, req, res, "상품 거래에 실패하였습니다.");
     }
   };
+
+  // 중고거래 상품 검색
+  searchProduct = async (req, res, next) => {
+    try {
+      const keyword = req.query.keyword;
+
+      const result = await this.productsService.searchProduct(keyword);
+
+      return res.status(200).json({ result });
+    } catch (error) {
+      next(error, req, res, '상품 검색에 실패하였습니다.');
+    }
+  };
+
+  // 중고거래 상품 검색 (ELK)
+  // elkSearchProduct = async (req, res, next) => {
+  //   try {
+  //     const keyword = req.query.keyword;
+      
+  //     // Elasticsearch에 대한 연결을 만듭니다.
+  //     const client = new es.Client({
+  //       host: 'localhost:9200',
+  //     });
+
+  //     // 검색을 만듭니다.
+  //     const search = new es.Search({
+  //       index: 'products',
+  //       type: 'my_type',
+  //       body: {
+  //         query: {
+  //           match: {
+  //             name: 'John Doe',
+  //           },
+  //         },
+  //       },
+  //     });
+
+  //     // 검색을 실행하고 결과를 가져옵니다.
+  //     const results = await client.search(search);
+
+  //     // 결과를 처리합니다.
+  //     for (const result of results.hits.hits) {
+  //       console.log(result._source.name);
+  //     }
+
+  //   } catch (error) {
+  //     next(error, req, res, '상품 검색에 실패하였습니다.');
+  //   }
+  // };
 }
 
 module.exports = ProductsController;

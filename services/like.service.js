@@ -1,40 +1,42 @@
 const LikeRepository = require("../repositories/like.repository");
 const { Transaction } = require("sequelize");
+const { Likes, sequelize } = require("../models");
+
 class LikeService {
-  likeRepository = new LikeRepository();
+  likeRepository = new LikeRepository(Likes);
 
   putLikes = async (user_id, product_id) => {
-    try {
-      const existProduct = await this.likeRepository.existProduct(product_id);
-      if (!existProduct) {
-        const error = new Error();
-        error.errorCode = 404;
-        error.message = "해당 게시물이 존재하지 않습니다.";
-        throw error();
-      }
+    let result;
+    await sequelize.transaction(
+      {
+        isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
+      },
 
       async (t) => {
-        await sequelize.transaction({
-          isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
-        });
+        const existProduct = await this.likeRepository.existProduct(product_id);
+        if (!existProduct) {
+          const error = new Error();
+          error.errorCode = 404;
+          error.message = "해당 게시물이 존재하지 않습니다.";
+          throw error();
+        }
+
         const existLikeId = await this.likeRepository.existLikeId(
           user_id,
           product_id
         );
-
         if (existLikeId === null) {
           await this.likeRepository.createLike(product_id, user_id);
           await this.likeRepository.likeUp(product_id);
-          return res.status(200).json({ message: "관심 완료" }); //임시세팅
+          result = true; //BE확인용
         } else {
           await this.likeRepository.deleteLike(product_id, user_id);
           await this.likeRepository.likeDown(product_id);
-          return res.status(200).json({ message: "관심 취소" }); //임시세팅
+          result = false; //BE확인용
         }
-      };
-    } catch (error) {
-      throw error;
-    }
+      }
+    );
+    return result;
   };
 }
 

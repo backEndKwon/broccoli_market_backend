@@ -5,10 +5,7 @@ const redisClient = require("../utils/redis.js");
 module.exports = async (req, res, next) => {
   const { authorization } = req.cookies;
 
-  console.log("auth 미들웨어!", authorization);
   const [ authType, authToken ] = (authorization ?? "").split(" ");
-  console.log("auth 타입", authType);
-  console.log("auth 토큰!", authToken);
 
   try {
     if (authType !== "Bearer" || !authToken) {

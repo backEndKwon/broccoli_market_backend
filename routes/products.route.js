@@ -10,19 +10,19 @@ const productsController = new ProductsController();
 const likeController = new LikeController();
 
 // 중고거래 상품 생성
-router.post("/", uploadImage.single("photo"), productsController.createProduct);
+router.post("/", authMiddleware, uploadImage.single("photo"), productsController.createProduct);
 
 // 중고거래 상품 전체 조회
 router.get("/", productsController.getAllProduct);
 
 // 중고거래 상품 상세 조회
-router.get("/:product_id", productsController.getOneProduct);
+router.get("/:product_id", productsController.getDetailProduct);
 
 // 중고거래 상품 수정
-router.patch("/:product_id", productsController.updateProduct);
+router.patch("/:product_id", authMiddleware, uploadImage.single("photo"), productsController.updateProduct);
 
 // 중고거래 상품 삭제
-router.delete("/:product_id", productsController.deleteProduct);
+router.delete("/:product_id", authMiddleware, productsController.deleteProduct);
 
 // 중고거래 상품 거래 완료
 router.patch('/:product_id/sold', productsController.makeProductSold);
@@ -30,10 +30,11 @@ router.patch('/:product_id/sold', productsController.makeProductSold);
 // 중고거래 상품 관심 설정
 router.put("/:product_id/likes", authMiddleware, likeController.putLikes);
 
-// 중고거래 상품 거래 검색
-// router.get('/search', productsController.searchProduct);
+// 중고거래 상품 검색
+router.get('/search', productsController.searchProduct);
 
-// 관련 게시물 조회
-// router.get("?category=:category", productsController.relatedProduct);
+// 중고거래 상품 검색 (ELK)
+// router.get('/search/elk', productsController.elkSearchProduct)
+
 
 module.exports = router;
