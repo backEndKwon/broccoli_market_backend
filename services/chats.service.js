@@ -34,10 +34,13 @@ class ChatService {
 
               // 최근 채팅 내용을 보여주기 위한 로직
               const parsedContent = JSON.parse(content);
-              const lastestContent =
-                parsedContent.length > 0
-                  ? parsedContent[parsedContent.length - 1].content
-                  : "";
+              let lastestContent;
+              if(parsedContent.length > 0) {
+                const lastestContentBeforeParsing = parsedContent[parsedContent.length - 1];
+                lastestContent = JSON.parse(lastestContentBeforeParsing).content;
+              } else {
+                lastestContent = "";
+              }
 
               return {
                 chat_id,
