@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op } = require("sequelize");
 // const { post } = require('superagent');
 
 class ProductsRepository {
@@ -8,16 +8,24 @@ class ProductsRepository {
     this.usersInfoModel = usersInfoModel;
   }
 
-  createProduct = async (user_id, id, title, content, price, category, photo_ip) => {
+  createProduct = async (
+    user_id,
+    id,
+    title,
+    content,
+    price,
+    category,
+    photo_ip
+  ) => {
     await this.model.create({
-        user_id,
-        user_info_id: user_id,
-        id,
-        title,
-        content,
-        price,
-        category,
-        photo_ip
+      user_id,
+      user_info_id: user_id,
+      id,
+      title,
+      content,
+      price,
+      category,
+      photo_ip,
     });
   };
 
@@ -26,7 +34,7 @@ class ProductsRepository {
       include: [
         {
           model: this.usersInfoModel,
-          attributes: ['address'],
+          attributes: ["address"],
         },
       ],
     });
@@ -38,11 +46,11 @@ class ProductsRepository {
       include: [
         {
           model: this.usersModel,
-          attributes: ['id'],
+          attributes: ["id"],
         },
         {
           model: this.usersInfoModel,
-          attributes: ['address'],
+          attributes: ["address"],
         },
       ],
     });
@@ -54,8 +62,8 @@ class ProductsRepository {
         category,
         is_sold: false,
         product_id: {
-          [Op.notIn]: [product_id]
-        }
+          [Op.notIn]: [product_id],
+        },
       },
       attributes: [
         'product_id',
@@ -68,20 +76,24 @@ class ProductsRepository {
       include: [
         {
           model: this.usersInfoModel,
-          attributes: ['address'],
+          attributes: ["address"],
         },
       ],
     });
   };
 
   hitsProduct = async (product_id) => {
-    await this.model.increment(
-      { views: +1 },
-      { where: {product_id} }
-    )
+    await this.model.increment({ views: +1 }, { where: { product_id } });
   };
 
-  updateProduct = async (product_id, title, content, price, category, photo_ip) => {
+  updateProduct = async (
+    product_id,
+    title,
+    content,
+    price,
+    category,
+    photo_ip
+  ) => {
     return await this.model.update(
       { title, content, price, category, photo_ip },
       { where: { product_id } }
@@ -89,9 +101,7 @@ class ProductsRepository {
   };
 
   deleteProduct = async (product_id) => {
-    return await this.model.destroy(
-      { where: { product_id } }
-    );
+    return await this.model.destroy({ where: { product_id } });
   };
 
   makeProductSold = async (product_id) => {
@@ -102,17 +112,34 @@ class ProductsRepository {
   };
 
   searchProduct = async (keywords) => {
-      const query = {
-        where: {
-          title: {
-            [Op.or] : keywords.map((keyword) => ({
-              [Op.substring]: [keyword],
-            })),
-          }
+    const query = {
+      where: {
+        title: {
+          [Op.or]: keywords.map((keyword) => ({
+            [Op.substring]: [keyword],
+          })),
         },
-      };
-      const results = await this.model.findAll(query);
+      },
+    };
+    const results = await this.model.findAll(query);
     return results;
+  };
+
+  findSellerInfoByProductId = async (product_id) => {
+    return await this.model.findOne({
+      where: { product_id },
+      attibutes: ["title"],
+      include: [
+        {
+          model: this.usersModel,
+          attributes: ["user_id", "nickname"],
+        },
+        {
+          model: this.usersInfoModel,
+          attributes: ["address"],
+        },
+      ],
+    });
   };
 }
 
