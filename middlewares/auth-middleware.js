@@ -4,14 +4,18 @@ const redisClient = require("../utils/redis.js");
 
 module.exports = async (req, res, next) => {
   const { authorization } = req.cookies;
-  const { authType, authToken } = (authorization ?? "").split(" ");
-  if (authType !== "Bearer" || !authToken) {
-    return res
-      .status(403)
-      .json({ errormessage: "로그인이 필요한 기능입니다." });
-  }
+
+  console.log("auth 미들웨어!", authorization);
+  const [ authType, authToken ] = (authorization ?? "").split(" ");
+  console.log("auth 타입", authType);
+  console.log("auth 토큰!", authToken);
 
   try {
+    if (authType !== "Bearer" || !authToken) {
+      return res
+        .status(403)
+        .json({ errormessage: "로그인이 필요한 기능입니다." });
+    }
     const decodedToken = jwt.verify(authToken, process.env.SECRET_KEY);
     const userId = decodedToken.userId;
 
