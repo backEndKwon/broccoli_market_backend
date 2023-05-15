@@ -55,7 +55,6 @@ class ChatRepository {
         attributes: [
           "updatedAt",
           "content",
-          "chat_id",
           [Sequelize.literal("`Product`.`user_id`"), "seller_id"],
           [Sequelize.literal("`Product`.`product_id`"), "product_id"],
           [Sequelize.literal("`Product`.`title`"), "title"],
@@ -70,8 +69,30 @@ class ChatRepository {
     }
   };
 
-  saveChatContents = async (chat_id, content) => {
+  saveChatContents = async (chat_id, contents) => {
+    try {
+      await this.chatsModel.update(
+        {
+          content: Sequelize.literal(
+            `JSON_ARRAY_APPEND(content, "$", '${JSON.stringify(contents)}')`
+          ),
+        },
+        { where: { chat_id } }
+      );
+    } catch (error) {
+      throw error;
+    }
+  };
 
+  checkBuyerIdByChatId = async (chat_id) => {
+    try {
+      return await this.chatsModel.findOne({
+        attributes: ["buyer_id"],
+        where: { chat_id },
+      });
+    } catch (error) {
+      throw error;
+    }
   };
 }
 

@@ -21,4 +21,3 @@ redisClient.connect();
 
 // 다른 모듈에서 RedisClient를 사용할 수 있도록 export
 module.exports = redisClient;
-
