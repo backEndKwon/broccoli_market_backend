@@ -27,15 +27,16 @@ class AuthService {
 
     const refreshToken = jwt.sign(
       { user_id: user.user_id },
-      process.env.SECRET_KEY,
+      process.env.REFRESH_SECRET_KEY,
       {
         expiresIn: process.env.REFRESH_EXPIRES,
       }
     );
+    const refreshObject = {type: "Bearer", token: refreshToken}
 
     await redisClient.SET(user.user_id.toString(), refreshToken, process.env.REFRESH_EXPIRES);
 
-    return { accessObject,refreshToken: refreshToken }; 
+    return { accessObject, refreshObject }; 
 
   };
 
