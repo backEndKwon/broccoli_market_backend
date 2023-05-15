@@ -11,5 +11,4 @@ router.use("/auth", [authRouter]);
 router.use("/chat", [chatRouter]);
 router.use("/mypage", [mypageRouter]);
 
-
 module.exports = router;
