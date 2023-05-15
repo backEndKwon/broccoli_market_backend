@@ -13,31 +13,25 @@ class LikeRepository {
     });
     return existLikeId;
   };
-  A;
+
   /* ************************** */
 
   /* 관심 클릭시 likes_id 생성 */
   createLike = async (product_id, user_id) => {
-    await Likes.create({
-      where: {
-        user_id: 1,
-        product_id: 2,
-      },
-    });
+    const createLike = await Likes.create({ user_id, product_id });
+    return createLike;
   };
   /* likes_id 생성 시 Product의 likes +1 */
   likeUp = async (product_id) => {
-    await Products.increment("likes", { where: { product_id } });
+    const likeUp = await Products.increment("likes", { where: { product_id } });
+    return likeUp;
   };
   /* ************************** */
 
   /* 관심 취소시 likes_id 삭제 */
   deleteLike = async (product_id, user_id) => {
     await Likes.destroy({
-      where: {
-        user_id: 1,
-        product_id: 2,
-      },
+      where: { user_id, product_id },
     });
   };
   /* likes_id 삭제 시 Product의 likes -1 */

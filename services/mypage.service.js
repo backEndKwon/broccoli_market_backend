@@ -8,7 +8,7 @@ class MypageService {
     const getMySoldProducts = await this.mypageRepository.getMySoldProducts(
       user_id
     );
-    if (!getMySoldProducts) {
+    if (getMySoldProducts.length === 0) {
       const error = new Error();
       error.errorCode = 404;
       error.message = "판매 상품이 존재하지 않습니다.";
@@ -23,7 +23,7 @@ class MypageService {
       user_id
     );
     console.log(getMyBuyProducts.is_sold);
-    if (!getMyBuyProducts) {
+    if (getMyBuyProducts.length === 0) {
       const error = new Error();
       error.errorCode = 404;
       error.message = "구매내역이 존재하지 않습니다.";
