@@ -62,7 +62,8 @@ class ProductsRepository {
         'title',
         'price',
         'likes',
-        'views'
+        'views',
+        'photo_ip'
       ],
       include: [
         {
