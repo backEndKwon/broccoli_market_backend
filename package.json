@@ -21,6 +21,7 @@
   "homepage": "https://github.com/marketccoli/broccoli_market_backend#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.332.0",
+    "@elastic/elasticsearch": "^8.7.0",
     "aws-sdk": "^2.1377.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",

@@ -65,7 +65,14 @@ class ProductsRepository {
           [Op.notIn]: [product_id],
         },
       },
-      attributes: ["product_id", "title", "price", "likes", "views"],
+      attributes: [
+        'product_id',
+        'title',
+        'price',
+        'likes',
+        'views',
+        'photo_ip'
+      ],
       include: [
         {
           model: this.usersInfoModel,

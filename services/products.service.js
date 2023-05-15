@@ -98,7 +98,7 @@ class ProductsService {
     category,
     photo_ip
   ) => {
-    const product = await this.productsRepository.getOneProduct(product_id);
+    const product = await this.productsRepository.findDetailProduct(product_id);
     if (!product) {
       const error = new Error();
       error.errorCode = 404;
@@ -120,7 +120,7 @@ class ProductsService {
       photo_ip
     );
 
-    const updateProduct = await this.productsRepository.getOneProduct(
+    const updateProduct = await this.productsRepository.findDetailProduct(
       product_id
     );
 
@@ -135,7 +135,7 @@ class ProductsService {
   };
 
   deleteProduct = async (product_id, user_id, id) => {
-    const product = await this.productsRepository.getOneProduct(product_id);
+    const product = await this.productsRepository.findDetailProduct(product_id);
     if (!product) {
       const error = new Error();
       error.errorCode = 404;
@@ -159,7 +159,7 @@ class ProductsService {
           isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
         },
         async (t) => {
-          const product = await this.productsRepository.getOneProduct(product_id);
+          const product = await this.productsRepository.findDetailProduct(product_id);
           if (!product) {
             const error = new Error();
             error.errorCode = 404;
