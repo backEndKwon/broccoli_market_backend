@@ -171,7 +171,7 @@ class AuthController {
             refreshToken: `${userData.refreshObject.type} ${userData.refreshObject.token}`,
           });
         } catch (err) {
-          console.error(err);
+          console.error("로그인 에러 로그", err);
           res.status(400).json({
             errorMessage: "로그인에 실패하였습니다.",
           });
