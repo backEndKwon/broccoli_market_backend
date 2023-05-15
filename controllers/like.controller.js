@@ -8,7 +8,9 @@ class LikeController {
     const { product_id } = req.params;
 
     try {
-      await this.likeService.putLikes(user_id, product_id);
+      const like = await this.likeService.putLikes(user_id, product_id);
+      const message = like ? "관심설정완료" : "관심설정취소"; //BE확인용(추후삭제가능)
+      res.status(200).json({ message }); //BE확인용(추후삭제가능)
     } catch (error) {
       next(error, req, res, "관심설정이 정상적으로 실행되지 않았습니다.");
     }
