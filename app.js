@@ -18,11 +18,12 @@ app.use(cookieParser());
 // logger
 app.use(morgan("dev"));
 
-cors
+// cors
 app.use(
   cors({
-    origin: "*",
-    credentials: "true",
+    // origin: "*",
+    origin: "http://localhost:3000",
+    credentials: true,
     // cors options
   })
 );
