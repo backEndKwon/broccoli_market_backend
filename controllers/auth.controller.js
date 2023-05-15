@@ -15,7 +15,7 @@ class AuthController {
       
       try {
         const emailTemplate = await ejs.renderFile(appDir + '/template/authMail.ejs', { authCode: authNum });
-        const redisSetResult = await redisClient.SETEX(email, 60, authNum )
+        const redisSetResult = await redisClient.SETEX(email, 180, authNum )
           
         const transporter = nodemailer.createTransport({
           service: "naver",
@@ -52,6 +52,41 @@ class AuthController {
           .json({ errorMessage: "인증 이메일 전송에 실패하였습니다." });
       }
     };
+
+    // kakaoLogin = async (req, res) => {
+    //   const { token } = req.headers;
+    //   const user = await jwt.verify(token, process.env.KAKAO_SECRET_KEY);
+  
+    //   try {
+    //     if (!user) {
+    //       res.status(401).json({
+    //         errorMessage: "가입되어있는 회원만 이용 가능합니다.",
+    //       });
+    //       return;
+    //     }
+  
+    //     const userData = await this.authService.login(id);
+  
+    //     res.cookie(
+    //       "authorization",
+    //       `${userData.accessObject.type} ${userData.accessObject.token}`
+    //     );
+  
+    //     res.cookie(
+    //       "refreshToken",
+    //       `${userData.refreshObject.type} ${userData.refreshObject.token}`
+    //        );
+    //     res.status(200).json({
+    //       authorization: `${userData.accessObject.type} ${userData.accessObject.token}`,
+    //       refreshToken: `${userData.refreshObject.type} ${userData.refreshObject.token}`,
+    //     });
+    //   } catch (err) {
+    //     console.error("로그인 에러 로그", err);
+    //     res.status(400).json({
+    //       errorMessage: "로그인에 실패하였습니다.",
+    //     });
+    //   }
+    // };
     
     signup = async (req, res) => {
         const {id, nickname, password, email, address, authCode } = req.body;
@@ -146,7 +181,7 @@ class AuthController {
       login = async (req, res) => {
         const { id, password } = req.body;
         const user = await this.authService.findOneUser(id);
-    
+        
         try {
           if (!user || password !== user.password) {
             res.status(412).json({
@@ -166,10 +201,13 @@ class AuthController {
             "refreshToken",
             `${userData.refreshObject.type} ${userData.refreshObject.token}`
              );
+          const redisSetRefreshToken = await redisClient.SETEX(user.id, 180, `${userData.refreshObject.type} ${userData.refreshObject.token}` )
+
           res.status(200).json({
             authorization: `${userData.accessObject.type} ${userData.accessObject.token}`,
             refreshToken: `${userData.refreshObject.type} ${userData.refreshObject.token}`,
           });
+
         } catch (err) {
           console.error("로그인 에러 로그", err);
           res.status(400).json({
