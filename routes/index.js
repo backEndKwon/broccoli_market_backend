@@ -5,7 +5,6 @@ const productRouter = require("./products.route");
 const authRouter = require("./auth.route");
 const chatRouter = require("./chats.route");
 const mypageRouter = require("./mypage.route");
-const likeRouter = require("./like.route");
 
 router.use("/product", [productRouter]);
 router.use("/auth", [authRouter]);
