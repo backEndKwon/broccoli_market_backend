@@ -34,8 +34,6 @@ class AuthService {
     );
     const refreshObject = {type: "Bearer", token: refreshToken}
 
-    await redisClient.SET(user.user_id.toString(), refreshToken, process.env.REFRESH_EXPIRES);
-
     return { accessObject, refreshObject }; 
 
   };

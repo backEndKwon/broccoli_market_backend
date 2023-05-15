@@ -27,19 +27,12 @@ module.exports = async (req, res, next) => {
   } catch (error) {
     if (error.name === "TokenExpiredError") {
       const refreshToken = req.cookies.refreshToken;
-      const redisRefreshToken = await redisClient.get(user_id);
-
-      if (refreshToken !== redisRefreshToken) {
-        return res.status(401).json({
-          errormessage: "토큰이 일치하지 않습니다. 다시 로그인해 주세요.",
-        });
-      }
-
+      
       const decodedRefreshToken = jwt.verify(
         refreshToken,
         process.env.REFRESH_SECRET_KEY
       );
-      const userId = decodedRefreshToken.userId;
+      const user_id = decodedRefreshToken.user_id;
 
       const user = await Users.findOne({ where: { user_id } });
       if (!user) {
@@ -49,7 +42,7 @@ module.exports = async (req, res, next) => {
       }
 
       const newAccessToken = jwt.sign(
-        { userId: user.userId },
+        { user_id: user.user_id },
         process.env.SECRET_KEY,
         { expiresIn: "2h" }
       );

@@ -6,8 +6,11 @@ const AuthController = require('../controllers/auth.controller');
 const authController = new AuthController();
 
 
-//POST: 이메일 인증
+// POST: 이메일 인증
 router.post('/authEmail', authController.authEmail);
+
+// POST: 소셜 로그인
+// router.post('/auth/kakao', authController.kakaoLogin)
 
 // POST: 회원가입
 router.post('/signup', authController.signup);
