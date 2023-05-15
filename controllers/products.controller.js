@@ -43,11 +43,15 @@ class ProductsController {
   };
 
   // 중고거래 상품 상세 조회
-  getOneProduct = async (req, res, next) => {
+  getDetailProduct = async (req, res, next) => {
     try {
       const { product_id } = req.params;
 
-      const product = await this.productsService.findOneProduct(product_id);
+      if (product_id === 'search') {
+        return next();
+      }
+
+      const product = await this.productsService.findDetailProduct(product_id);
 
       return res.status(200).json({ product });
     } catch (error) {
@@ -109,6 +113,19 @@ class ProductsController {
       return res.status(200).json({ message: "상품 거래 완료" });
     } catch (error) {
       next(error, req, res, "상품 거래에 실패하였습니다.");
+    }
+  };
+
+  // 중고거래 상품 검색
+  searchProduct = async (req, res, next) => {
+    try {
+      const keyword = req.query.keyword;
+
+      const result = await this.productsService.searchProduct(keyword);
+
+      return res.status(200).json({ result });
+    } catch (error) {
+      next(error, req, res, '상품 검색에 실패하였습니다.');
     }
   };
 }

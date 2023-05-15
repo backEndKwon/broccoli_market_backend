@@ -25,10 +25,7 @@ router.delete("/:product_id", productsController.deleteProduct);
 // 중고거래 상품 거래 완료
 router.patch('/:product_id/sold', productsController.makeProductSold);
 
-// 중고거래 상품 거래 검색
-// router.get('/search', productsController.searchProduct);
-
-// 관련 게시물 조회
-// router.get("?category=:category", productsController.relatedProduct);
+// 중고거래 상품 검색
+router.get('/search', productsController.searchProduct);
 
 module.exports = router;

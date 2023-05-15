@@ -2,8 +2,9 @@ const { Op } = require('sequelize');
 // const { post } = require('superagent');
 
 class ProductsRepository {
-  constructor(model, usersInfoModel) {
+  constructor(model, usersModel, usersInfoModel) {
     this.model = model;
+    this.usersModel = usersModel;
     this.usersInfoModel = usersInfoModel;
   }
 
@@ -31,9 +32,38 @@ class ProductsRepository {
     });
   };
 
-  getOneProduct = async (product_id) => {
+  findDetailProduct = async (product_id) => {
     return await this.model.findOne({
       where: { product_id },
+      include: [
+        {
+          model: this.usersModel,
+          attributes: ['id'],
+        },
+        {
+          model: this.usersInfoModel,
+          attributes: ['address'],
+        },
+      ],
+    });
+  };
+
+  findRelatedProduct = async (category, product_id) => {
+    return await this.model.findAll({
+      where: {
+        category,
+        is_sold: false,
+        product_id: {
+          [Op.notIn]: [product_id]
+        }
+      },
+      attributes: [
+        'product_id',
+        'title',
+        'price',
+        'likes',
+        'views'
+      ],
       include: [
         {
           model: this.usersInfoModel,
@@ -41,6 +71,13 @@ class ProductsRepository {
         },
       ],
     });
+  };
+
+  hitsProduct = async (product_id) => {
+    await this.model.increment(
+      { views: +1 },
+      { where: {product_id} }
+    )
   };
 
   updateProduct = async (product_id, title, content, price, category, photo_ip) => {
@@ -61,7 +98,21 @@ class ProductsRepository {
       { is_sold: true },
       { where: { product_id } }
     );
-  }
+  };
+
+  searchProduct = async (keywords) => {
+      const query = {
+        where: {
+          title: {
+            [Op.or] : keywords.map((keyword) => ({
+              [Op.substring]: [keyword],
+            })),
+          }
+        },
+      };
+      const results = await this.model.findAll(query);
+    return results;
+  };
 }
 
 module.exports = ProductsRepository;
