@@ -17,11 +17,12 @@ class ChatController {
   // POST: 새로운 1:1 채팅 생성
   createNewChat = async (req, res, next) => {
     const { product_id } = req.params;
-    const { user_id } = res.locals.user;
+    const { user_id, nickname } = res.locals.user;
     try {
       const newChat = await this.chatService.createNewChat(
         parseInt(product_id),
-        user_id
+        user_id,
+        nickname
       );
       res.status(201).json({ newChat });
     } catch (error) {
@@ -32,9 +33,9 @@ class ChatController {
   // GET: 1:1 채팅 내역 조회
   getMyOneChat = async (req, res, next) => {
     const { chat_id } = req.params;
-    const { user_id } = res.locals.user;
+    const { user_id, nickname } = res.locals.user;
     try {
-      const allChatHistory = await this.chatService.getMyOneChat(chat_id, user_id);
+      const allChatHistory = await this.chatService.getMyOneChat(chat_id, user_id, nickname);
       res.status(201).json({ allChatHistory });
     } catch (error) {
       next(error, req, res, "채팅 내역 조회에 실패하였습니다.");

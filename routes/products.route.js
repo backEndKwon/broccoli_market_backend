@@ -16,7 +16,7 @@ router.post("/", uploadImage.single("photo"), productsController.createProduct);
 router.get("/", productsController.getAllProduct);
 
 // 중고거래 상품 상세 조회
-router.get("/:product_id", productsController.getOneProduct);
+router.get("/:product_id", productsController.getDetailProduct);
 
 // 중고거래 상품 수정
 router.patch("/:product_id", productsController.updateProduct);
