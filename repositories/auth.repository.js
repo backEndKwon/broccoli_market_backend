@@ -1,4 +1,4 @@
-const { Users } = require('../models');
+const { Users } = require("../models");
 
 class AuthRepository {
   createUser = async (id, nickname, password, email, adress) => {
@@ -7,7 +7,7 @@ class AuthRepository {
       nickname,
       password,
       email,
-      adress
+      adress,
     });
     return createUserData;
   };
@@ -20,10 +20,18 @@ class AuthRepository {
   };
 
   findOneByUserId = async (user_id) => {
-    const userInfo= await Users.findOne({
+    const userInfo = await Users.findOne({
       where: { user_id },
     });
-    return userInfo
+    return userInfo;
+  };
+
+  findUserInfoByUserId = async (user_id) => {
+    const userInfo = await Users.findOne({
+      where: { user_id },
+      attributes: ["nickname", "address"],
+    });
+    return userInfo;
   };
 }
 
