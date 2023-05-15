@@ -17,9 +17,9 @@ module.exports = async (req, res, next) => {
         .json({ errormessage: "로그인이 필요한 기능입니다." });
     }
     const decodedToken = jwt.verify(authToken, process.env.SECRET_KEY);
-    const userId = decodedToken.userId;
+    const user_id = decodedToken.user_id;
 
-    const user = await Users.findOne({ where: { userId } });
+    const user = await Users.findOne({ where: { user_id } });
     if (!user) {
       return res.status(401).json({
         errormessage: "토큰에 해당하는 사용자가 존재하지 않습니다.",
@@ -63,7 +63,7 @@ module.exports = async (req, res, next) => {
       });
       res.locals.user = user;
       return next();
-    } else {
+    } else  {
       return res.status(403).json({
         errormessage: "전달된 쿠키에서 오류가 발생하였습니다.",
       });
