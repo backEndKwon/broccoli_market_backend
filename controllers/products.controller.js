@@ -142,27 +142,98 @@ class ProductsController {
         index: 'products',
         size: 100,
         query: {
-          bool: {
+          bool:{
             should: [
               {
-                match: {
-                  title: {
-                    query: keyword,
-                    fuzziness: 'auto',
-                  }
+                query_string: {
+                  default_field: 'title',
+                  query: '*' + keyword + '*'
                 }
               },
               {
-                match: {
-                  content: {
-                    query: keyword,
-                    fuzziness: 'auto',
-                  }
+                query_string: {
+                  default_field: 'content',
+                  query: '*' + keyword + '*'
                 }
               },
             ]
           }
         },
+        sort: [
+          {
+            createdat: {
+              order: 'asc'
+            }
+          }
+        ]
+      });
+
+      // const results = await client.search({
+      //   index: 'products',
+      //   size: 100,
+      //   query: {
+      //     bool: {
+      //       should: [
+      //         {
+      //           match: {
+      //             title: {
+      //               query: keyword,
+      //               fuzziness: 'auto',
+      //             }
+      //           }
+      //         },
+      //         {
+      //           match: {
+      //             content: {
+      //               query: keyword,
+      //               fuzziness: 'auto',
+      //             }
+      //           }
+      //         },
+      //       ]
+      //     }
+      //   },
+      // });
+      
+      let data = [];
+
+      //결과를 처리합니다.
+      for (const result of results.hits.hits) {
+        data.push(result._source);
+      }
+      
+      res.status(200).json(data)
+
+    } catch (error) {
+      next(error, req, res, '상품 검색에 실패하였습니다.');
+    }
+  };
+
+  // 중고거래 상품 전체 조회
+  elkAllProduct = async (req, res, next) => {
+    try {
+      const keyword = req.query.keyword;
+    
+      // Elasticsearch에 대한 연결을 만듭니다.
+      const client = new es.Client({
+        host: 'http://localhost:9200',
+        nodes: ['http://localhost:9200'],
+      });
+
+      // 검색을 실행하고 결과를 가져옵니다.
+      const results = await client.search({
+        index: 'products',
+        size: 10000,
+        query: {
+          match_all: {},
+        },
+        sort: [
+          {
+            createdat: {
+              order: 'asc'
+            }
+          }
+        ]
       });
 
       let data = [];
@@ -178,6 +249,7 @@ class ProductsController {
       next(error, req, res, '상품 검색에 실패하였습니다.');
     }
   };
+
 }
 
 module.exports = ProductsController;

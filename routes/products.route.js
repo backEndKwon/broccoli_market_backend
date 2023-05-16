@@ -36,4 +36,7 @@ router.get('/search', productsController.searchProduct);
 // 중고거래 상품 검색 (ELK)
 router.get('/search/elk', productsController.elkSearchProduct)
 
+// 중고거래 상품 전체 조회 (ELK)
+router.get('/search/elkall', productsController.elkAllProduct)
+
 module.exports = router;
