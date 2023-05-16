@@ -114,11 +114,18 @@ class ProductsRepository {
   searchProduct = async (keywords) => {
     const query = {
       where: {
-        title: {
-          [Op.or]: keywords.map((keyword) => ({
-            [Op.substring]: [keyword],
-          })),
-        },
+        [Op.or]: {
+          title: {
+            [Op.or]: keywords.map((keyword) => ({
+              [Op.substring]: [keyword],
+            })),
+          },
+          content: {
+            [Op.or]: keywords.map((keyword) => ({
+              [Op.substring]: [keyword],
+            })),
+          }
+        }
       },
     };
     const results = await this.model.findAll(query);
