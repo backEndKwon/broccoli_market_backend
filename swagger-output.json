@@ -5,7 +5,7 @@
     "description": "항해 14기 클론코딩 18조 마켓콜리",
     "version": "1.0.0"
   },
-  "host": "localhost:3000",
+  "host": "184.73.136.235/api",
   "basePath": "/",
   "schemes": [
     "http"

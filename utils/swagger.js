@@ -6,7 +6,7 @@ const doc = {
     "title": "브로콜리 마켓",
     "description": "항해 14기 클론코딩 18조 마켓콜리",
   },
-  host: "localhost:3000",
+  host: "184.73.136.235/api",
   schemes: ["http"],
 };
 
