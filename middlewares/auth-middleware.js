@@ -6,7 +6,8 @@ module.exports = async (req, res, next) => {
   const { authorization } = req.cookies;
 
   const [authType, authToken] = (authorization ?? "").split(" ");
-  console.log("에러로그", authorization, authType, authToken);
+  console.log("auth 에러로그", authorization);
+  console.log("split 에러로그", authType, authToken);
   try {
     if (authType !== "Bearer" || !authToken) {
       console.log("에러메세지: 로그인이 필요한 기능입니다.");
