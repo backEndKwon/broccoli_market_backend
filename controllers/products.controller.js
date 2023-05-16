@@ -1,5 +1,5 @@
 const ProductsService = require("../services/products.service");
-const { productSchema } = require("./joi");
+const { productSchema } = require("../middlewares/joi");
 const es = require("@elastic/elasticsearch");
 
 class ProductsController {
@@ -167,33 +167,6 @@ class ProductsController {
           }
         ]
       });
-
-      // const results = await client.search({
-      //   index: 'products',
-      //   size: 100,
-      //   query: {
-      //     bool: {
-      //       should: [
-      //         {
-      //           match: {
-      //             title: {
-      //               query: keyword,
-      //               fuzziness: 'auto',
-      //             }
-      //           }
-      //         },
-      //         {
-      //           match: {
-      //             content: {
-      //               query: keyword,
-      //               fuzziness: 'auto',
-      //             }
-      //           }
-      //         },
-      //       ]
-      //     }
-      //   },
-      // });
       
       let data = [];
 
@@ -209,7 +182,7 @@ class ProductsController {
     }
   };
 
-  // 중고거래 상품 전체 조회
+  // 중고거래 상품 전체 조회 (ELK)
   elkAllProduct = async (req, res, next) => {
     try {
       const keyword = req.query.keyword;
@@ -220,7 +193,7 @@ class ProductsController {
         nodes: ['http://localhost:9200'],
       });
 
-      // 검색을 실행하고 결과를 가져옵니다.
+      // 모든 상품 게시물을 가져옵니다.
       const results = await client.search({
         index: 'products',
         size: 10000,
