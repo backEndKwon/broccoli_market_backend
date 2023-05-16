@@ -1,16 +1,21 @@
 const AuthRepository = require('../repositories/auth.repository');
-const { User } = require("../models");
+const { Users } = require("../models");
 const redisClient = require("../utils/redis");
 const jwt = require("jsonwebtoken");
+
 
 class AuthService {
   constructor(authRepository) {
     this.redisClient = redisClient;
   }
-  authRepository = new AuthRepository(User);
+  authRepository = new AuthRepository(Users);
   
   signup = async (id, nickname, password, email, address) => {
-    await this.authRepository.createUser(id, nickname, password, email, address);
+    const usersData = { id, password, nickname };
+    const users_InfoData = { email, address, sold_item: "", likes: "", bought_item: "" };
+  
+    await this.authRepository.createUser(usersData, users_InfoData);
+    
     return { message: "회원 가입 완료" };
   };
 
