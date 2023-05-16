@@ -10,52 +10,43 @@ class ChatService {
   // GET: 자신의 전체 채팅 목록 조회
   getMyAllChats = async (user_id) => {
     try {
-      let allMyChats;
-      await sequelize.transaction(
-        {
-          isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
-        },
-        async (t) => {
-          const chatLists = await this.chatRepository.getMyAllChats(user_id);
+      const chatLists = await this.chatRepository.getMyAllChats(user_id);
 
-          allMyChats = await Promise.all(
-            chatLists.map(async (chat) => {
-              const { updatedAt, content, chat_id } = chat.dataValues;
-              const { product_id, title, is_sold } = chat.Product;
-              const seller_id = chat.Product.user_id;
+      const allMyChats = await Promise.all(
+        chatLists.map(async (chat) => {
+          const { updatedAt, content, chat_id, buyer_id } = chat.dataValues;
+          const { product_id, title, is_sold } = chat.Product;
 
-              const seller_info =
-                await this.productsRepository.findSellerInfoByProductId(
-                  product_id
-                );
+          // 경과 시간을 계산하기 위한 로직
+          const passedTime = getPassedTime(updatedAt);
 
-              // 경과 시간을 계산하기 위한 로직
-              const passedTime = getPassedTime(updatedAt);
+          // 최근 채팅 내용을 보여주기 위한 로직
+          const parsedContent = JSON.parse(content);
+          let latestContent;
+          let latestSender;
+          if (parsedContent.length > 0) {
+            const lastestContentBeforeParsing =
+              parsedContent[parsedContent.length - 1];
+            latestContent = JSON.parse(lastestContentBeforeParsing).content;
+            latestSender =
+              JSON.parse(lastestContentBeforeParsing).user_id === buyer_id
+                ? "나"
+                : "판매자";
+          } else {
+            latestContent = "";
+            latestSender = "";
+          }
 
-              // 최근 채팅 내용을 보여주기 위한 로직
-              const parsedContent = JSON.parse(content);
-              let lastestContent;
-              if(parsedContent.length > 0) {
-                const lastestContentBeforeParsing = parsedContent[parsedContent.length - 1];
-                lastestContent = JSON.parse(lastestContentBeforeParsing).content;
-              } else {
-                lastestContent = "";
-              }
-
-              return {
-                chat_id,
-                product_id,
-                seller_nickname: seller_info.User.dataValues.nickname,
-                seller_id,
-                address: seller_info.Users_info.dataValues.address,
-                title,
-                lastestContent,
-                updatedAt: passedTime,
-                is_sold,
-              };
-            })
-          );
-        }
+          return {
+            chat_id,
+            product_id,
+            title,
+            latestContent,
+            latestSender,
+            updatedAt: passedTime,
+            is_sold,
+          };
+        })
       );
       return allMyChats;
     } catch (error) {
@@ -66,8 +57,7 @@ class ChatService {
   // POST: 새로운 1:1 채팅 생성
   createNewChat = async (product_id, buyer_id, buyer_nickname) => {
     try {
-      let newChat;
-      await sequelize.transaction(
+      const newChat =await sequelize.transaction(
         {
           isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
         },
@@ -84,16 +74,17 @@ class ChatService {
             throw error;
           }
 
-          const createdChat = await this.chatRepository.createNewChat(
-            product_id,
-            buyer_id
-          );
-
           // seller 정보
           const seller_info =
             await this.productsRepository.findSellerInfoByProductId(product_id);
 
-          newChat = {
+          const createdChat = await this.chatRepository.createNewChat(
+            product_id,
+            buyer_id,
+            seller_info.User.dataValues.user_id // seller_id
+          );
+
+          return {
             chat_id: createdChat.chat_id,
             product_id,
             buyer_id: createdChat.buyer_id,
@@ -112,10 +103,9 @@ class ChatService {
   };
 
   // GET: 1:1 채팅 내역 조회
-  getMyOneChat = async (chat_id, buyer_id, buyer_nickname) => {
+  getMyOneChat = async (chat_id, user_id, user_nickname) => {
     try {
-      let oneChat;
-      await sequelize.transaction(
+      const oneChat = await sequelize.transaction(
         {
           isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
         },
@@ -128,7 +118,10 @@ class ChatService {
             throw error;
           }
 
-          if (chatRecords.buyer_id !== buyer_id) {
+          if (
+            chatRecords.buyer_id !== user_id &&
+            chatRecords.seller_id !== user_id
+          ) {
             const error = new Error();
             error.errorCode = 403;
             error.message = "해당 채팅에 대한 권한이 없습니다.";
@@ -144,18 +137,17 @@ class ChatService {
             await this.productsRepository.findSellerInfoByProductId(product_id);
 
           // 채팅 내역 객체화
-          const chatContents = await Promise.all(
-            JSON.parse(content).map((c) => {
-              return JSON.parse(c);
-            })
-          );
+          const chatContents = JSON.parse(content).map((c) => JSON.parse(c));
 
-          oneChat = {
+          return {
             chat_id,
             product_id,
             title,
-            seller_nickname: seller_info.User.dataValues.nickname,
-            buyer_nickname,
+            my_id: user_id,
+            my_nickname: user_nickname,
+            another_id: user_id === chatRecords.buyer_id ? chatRecords.seller_id : chatRecords.buyer_id,
+            another_nickname: seller_info.User.dataValues.nickname,
+            address: seller_info.Users_info.dataValues.address,
             updatedAt: passedTime,
             is_sold,
             chatContents,

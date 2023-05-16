@@ -9,7 +9,7 @@ const mypageController = new MypageController();
 router.get("/sold", authMiddleware, mypageController.getMySoldProducts);
 
 // GET: 자신이 (is_sold:false)구매 확정한 내역
-router.get("/buy", authMiddleware, mypageController.getMyBuyProducts);
+router.get("/bought", authMiddleware, mypageController.getMyBuyProducts);
 
 // GET: 관심 목록 조회(본인이 좋아요 누른)
 router.get("/likes", authMiddleware, mypageController.getMyLikeProducts);
