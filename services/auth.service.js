@@ -2,7 +2,7 @@ const AuthRepository = require('../repositories/auth.repository');
 const { Users } = require("../models");
 const redisClient = require("../utils/redis");
 const jwt = require("jsonwebtoken");
-const sequelize  = require('sequelize');
+
 
 class AuthService {
   constructor(authRepository) {

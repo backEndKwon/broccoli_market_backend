@@ -1,5 +1,6 @@
 const { Users, Users_info } = require("../models");
 
+
 class AuthRepository {
   createUser = async (usersData, users_InfoData) => {
     const createdUser = await Users.create({
