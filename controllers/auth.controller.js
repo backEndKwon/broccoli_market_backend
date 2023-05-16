@@ -53,17 +53,34 @@ class AuthController {
       }
     };
 
+    // 소셜 로그인 미구현 수정 중
     // kakaoLogin = async (req, res) => {
-    //   const { token } = req.headers;
-    //   const user = await jwt.verify(token, process.env.KAKAO_SECRET_KEY);
-  
+    //   const code = req.query.code;
+    //   const authToken = await Axios.post('https://kauth.kakao.com/oauth/token', {}, {
+    //             headers: {
+    //                 "Content-Type": "application/x-www-form-urlencoded"
+    //             },
+    //             params:{
+    //                 grant_type: 'authorization_code',
+    //                 client_id: CONFIG.KAKAO.RESTAPIKEY,
+    //                 code,
+    //                 redirect_uri: localhost:3000/api/auth/kakao
+    //             }
+    //         })
+
+      
+    //   const kakaoUser = await jwt.verify(token, process.env.KAKAO_SECRET_KEY);
+    //   const user_id = kakaoUser.user_id
+    //   const user = await this.authService.findOneUser(id);
+
     //   try {
+        
     //     if (!user) {
-    //       res.status(401).json({
-    //         errorMessage: "가입되어있는 회원만 이용 가능합니다.",
-    //       });
-    //       return;
+    //       req.flash( message , "회원가입이 필요합니다. 가입 후 이용해 주세요.");
+    //       res.redirect('/signup')
+    //       return ;
     //     }
+      
   
     //     const userData = await this.authService.login(id);
   
@@ -201,7 +218,6 @@ class AuthController {
             "refreshToken",
             `${userData.refreshObject.type} ${userData.refreshObject.token}`
              );
-          const redisSetRefreshToken = await redisClient.SETEX(user.id, 180, `${userData.refreshObject.type} ${userData.refreshObject.token}` )
 
           res.status(200).json({
             authorization: `${userData.accessObject.type} ${userData.accessObject.token}`,
