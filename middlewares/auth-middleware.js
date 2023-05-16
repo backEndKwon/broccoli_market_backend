@@ -5,10 +5,11 @@ const redisClient = require("../utils/redis.js");
 module.exports = async (req, res, next) => {
   const { authorization } = req.cookies;
 
-  const [ authType, authToken ] = (authorization ?? "").split(" ");
-
+  const [authType, authToken] = (authorization ?? "").split(" ");
+  console.log("에러로그", authorization, authType, authToken);
   try {
     if (authType !== "Bearer" || !authToken) {
+      console.log("에러메세지: 로그인이 필요한 기능입니다.");
       return res
         .status(403)
         .json({ errormessage: "로그인이 필요한 기능입니다." });
@@ -27,7 +28,7 @@ module.exports = async (req, res, next) => {
   } catch (error) {
     if (error.name === "TokenExpiredError") {
       const refreshToken = req.cookies.refreshToken;
-      
+
       const decodedRefreshToken = jwt.verify(
         refreshToken,
         process.env.REFRESH_SECRET_KEY
@@ -47,13 +48,16 @@ module.exports = async (req, res, next) => {
         { expiresIn: "2h" }
       );
 
-      res.cookie("authorization", `Bearer ${newAccessToken}`, {
-        httpOnly: true,
-        secure: false,
-      });
+      res.cookie("authorization", `Bearer ${newAccessToken}`);
+      // , {
+      //   httpOnly: true,
+      //   secure: false,
+      // }
       res.locals.user = user;
       return next();
-    } else  {
+    } else {
+      console.log("에러메세지: 전달된 쿠키에서 오류가 발생하였습니다.");
+
       return res.status(403).json({
         errormessage: "전달된 쿠키에서 오류가 발생하였습니다.",
       });
