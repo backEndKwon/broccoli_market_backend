@@ -21,7 +21,7 @@ app.use(morgan("dev"));
 // cors
 app.use(
   cors({
-    origin: "http://184.73.136.235/:3000",
+    origin: "http://localhost:3000",
     credentials: true,
     // cors options
   })
@@ -38,13 +38,13 @@ app.use("/api", [apiMainRouter]);
 app.use(errorHandler);
 
 const server = app.listen(port, () => {
-  console.log(`running http://localhost:${port}`);
+  console.log(`running http://184.73.136.235:${port}`);
 });
 
 // socket
 const io = require("socket.io")(server, {
   cors: {
-    origin: "*",
+    origin: "http://localhost:3000/chats",
     methods: ["GET", "POST"],
   },
 });
