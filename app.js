@@ -9,7 +9,6 @@ const port = process.env.HOST_PORT;
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger-output");
 const cors = require("cors");
-const { emitWarning } = require("process");
 
 // parser
 app.use(express.urlencoded({ extended: false }));
@@ -22,7 +21,7 @@ app.use(morgan("dev"));
 // cors
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "http://broccoli-market.store",
     credentials: true,
     // cors options
   })
@@ -39,7 +38,7 @@ app.use("/api", [apiMainRouter]);
 app.use(errorHandler);
 
 const server = app.listen(port, () => {
-  console.log(`running http://184.73.136.235:${port}`);
+  console.log(`running http://api.broccoli-market.store:${port}`);
 });
 
 // socket
