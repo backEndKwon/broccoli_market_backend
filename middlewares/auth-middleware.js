@@ -3,7 +3,7 @@ const { Users } = require("../models");
 const redisClient = require("../utils/redis.js");
 
 module.exports = async (req, res, next) => {
-  const { authorization } = req.cookies;
+  const { authorization } = req.headers;
 
   const [authType, authToken] = (authorization ?? "").split(" ");
   console.log("auth 에러로그", authorization);
