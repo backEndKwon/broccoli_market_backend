@@ -6,7 +6,7 @@ const errorHandler = require("./middlewares/errorHandler");
 const { host } = require("./config/config.js");
 const port = host.port;
 const swaggerUi = require("swagger-ui-express");
-// const swaggerFile = require("./swagger-output");
+const swaggerFile = require("./swagger-output");
 const cors = require("cors");
 const { emitWarning } = require("process");
 
@@ -28,7 +28,7 @@ app.use(
 );
 
 // swagger
-// app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // router
 const apiMainRouter = require("./routes/index");
@@ -37,13 +37,8 @@ app.use("/api", [apiMainRouter]);
 // errorHandler
 app.use(errorHandler);
 
-
-app.get("/", (req, res) => {
-  res.send("APIs for Voyage Blog");
-});
-
 const server = app.listen(port, () => {
-  console.log(`running http://localhost:${port}`);
+  console.log(`running http://184.73.136.235:${port}`);
 });
 
 // socket
