@@ -20,7 +20,7 @@ app.use(morgan("dev"));
 // cors
 app.use(
   cors({
-    origin: "http://broccoli-market.store/",
+    origin: "http://broccoli-market.store",
     credentials: true,
     // cors options
   })

@@ -83,15 +83,17 @@ class ChatService {
             error.message = "이미 채팅이 존재합니다.";
             throw error;
           }
-
-          const createdChat = await this.chatRepository.createNewChat(
-            product_id,
-            buyer_id
-          );
-
+          
           // seller 정보
           const seller_info =
             await this.productsRepository.findSellerInfoByProductId(product_id);
+
+          const createdChat = await this.chatRepository.createNewChat(
+            product_id,
+            buyer_id,
+            seller_info.User.dataValues.user_id // seller_id
+          );
+
 
           newChat = {
             chat_id: createdChat.chat_id,

@@ -28,11 +28,12 @@ class ChatRepository {
     }
   };
 
-  createNewChat = async (product_id, buyer_id) => {
+  createNewChat = async (product_id, buyer_id, seller_id) => {
     try {
       const newChat = await this.chatsModel.create({
         product_id,
         buyer_id,
+        seller_id,
         content: JSON.stringify([]), // 일단 빈 배열을 넣어줌
       });
       console.log("create 테스트", newChat);
