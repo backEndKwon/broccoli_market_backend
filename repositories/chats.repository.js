@@ -56,6 +56,7 @@ class ChatRepository {
           "updatedAt",
           "content",
           "buyer_id",
+          "seller_id",
           [Sequelize.literal("`Product`.`product_id`"), "product_id"],
           [Sequelize.literal("`Product`.`title`"), "title"],
           [Sequelize.literal("`Product`.`is_sold`"), "is_sold"],

@@ -57,8 +57,7 @@ class ChatService {
   // POST: 새로운 1:1 채팅 생성
   createNewChat = async (product_id, buyer_id, buyer_nickname) => {
     try {
-      let newChat;
-      await sequelize.transaction(
+      const newChat =await sequelize.transaction(
         {
           isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
         },
@@ -85,7 +84,7 @@ class ChatService {
             seller_info.User.dataValues.user_id // seller_id
           );
 
-          newChat = {
+          return {
             chat_id: createdChat.chat_id,
             product_id,
             buyer_id: createdChat.buyer_id,
@@ -104,10 +103,9 @@ class ChatService {
   };
 
   // GET: 1:1 채팅 내역 조회
-  getMyOneChat = async (chat_id, buyer_id, buyer_nickname) => {
+  getMyOneChat = async (chat_id, user_id, user_nickname) => {
     try {
-      let oneChat;
-      await sequelize.transaction(
+      const oneChat = await sequelize.transaction(
         {
           isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
         },
@@ -120,7 +118,10 @@ class ChatService {
             throw error;
           }
 
-          if (chatRecords.buyer_id !== buyer_id) {
+          if (
+            chatRecords.buyer_id !== user_id &&
+            chatRecords.seller_id !== user_id
+          ) {
             const error = new Error();
             error.errorCode = 403;
             error.message = "해당 채팅에 대한 권한이 없습니다.";
@@ -136,18 +137,17 @@ class ChatService {
             await this.productsRepository.findSellerInfoByProductId(product_id);
 
           // 채팅 내역 객체화
-          const chatContents = await Promise.all(
-            JSON.parse(content).map((c) => {
-              return JSON.parse(c);
-            })
-          );
+          const chatContents = JSON.parse(content).map((c) => JSON.parse(c));
 
-          oneChat = {
+          return {
             chat_id,
             product_id,
             title,
-            seller_nickname: seller_info.User.dataValues.nickname,
-            buyer_nickname,
+            my_id: user_id,
+            my_nickname: user_nickname,
+            another_id: user_id === chatRecords.buyer_id ? chatRecords.seller_id : chatRecords.buyer_id,
+            another_nickname: seller_info.User.dataValues.nickname,
+            address: seller_info.Users_info.dataValues.address,
             updatedAt: passedTime,
             is_sold,
             chatContents,
