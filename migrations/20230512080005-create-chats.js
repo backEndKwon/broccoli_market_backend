@@ -17,6 +17,10 @@ module.exports = {
           key: "user_id",
         },
       },
+      seller_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
       product_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
