@@ -1,5 +1,4 @@
 const { Op } = require("sequelize");
-// const { post } = require('superagent');
 
 class ProductsRepository {
   constructor(model, usersModel, usersInfoModel) {

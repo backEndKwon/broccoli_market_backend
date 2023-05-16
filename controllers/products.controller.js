@@ -14,9 +14,7 @@ class ProductsController {
         error.errorCode = 412;
         next(error, req, res, error.message);
       }
-      // for(let i = 300006; i <= 400005; i++){
-      //   value.title = i;
-      //   value.content = i;
+
         await this.productsService.createProduct(
           user_id,
           id,
@@ -26,7 +24,6 @@ class ProductsController {
           value.category,
           value.photo_ip
         );
-      // }
 
       return res.status(201).json({ message: "상품 생성 완료" });
     } catch (error) {
@@ -140,17 +137,6 @@ class ProductsController {
         nodes: ['http://localhost:9200'],
       });
 
-      // 검색을 만듭니다.
-      // const search = {
-      //   index: 'products',
-      //   size: 100,
-      //   query: {
-      //     match: {
-      //       category: keyword
-      //     },
-      //   },
-      // };
-
       // 검색을 실행하고 결과를 가져옵니다.
       const results = await client.search({
         index: 'products',
@@ -178,8 +164,6 @@ class ProductsController {
           }
         },
       });
-
-      // const results = await client.search(search);
 
       let data = [];
 
