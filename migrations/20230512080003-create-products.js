@@ -64,12 +64,12 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT,
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         defaultValue: Sequelize.fn("now"),
         type: Sequelize.DATE,
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         defaultValue: Sequelize.fn("now"),
         type: Sequelize.DATE,

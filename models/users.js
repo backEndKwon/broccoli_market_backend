@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasOne(models.Users_Info, {
+      this.hasOne(models.Users_info, {
         sourceKey: "user_id",
         foreignKey: "user_id",
       });
@@ -46,12 +46,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.STRING,
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         defaultValue: DataTypes.NOW,
         type: DataTypes.DATE,
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         defaultValue: DataTypes.NOW,
         type: DataTypes.DATE,
