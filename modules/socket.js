@@ -11,7 +11,7 @@ class Socket {
     });
 
     this.io.on("connection", (socket, next) => {
-      console.log("새로운 소켓이 연결됐어요!");
+      console.log("Socket connected!");
 
       socket.on("message", (data) => {
         console.log(data);

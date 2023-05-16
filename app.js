@@ -8,7 +8,7 @@ const port = host.port;
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger-output");
 const cors = require("cors");
-const { initSocket } = require("./socket/socket");
+const { initSocket } = require("./modules/socket");
 
 // parser
 app.use(express.urlencoded({ extended: false }));
