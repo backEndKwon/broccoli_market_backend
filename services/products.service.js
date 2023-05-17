@@ -86,7 +86,7 @@ class ProductsService {
         category: product.category,
         chat_count: product.chat_count,
         likes: product.likes,
-        views: product.views,
+        views: product.views + 1,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
         is_sold: product.is_sold,
