@@ -23,6 +23,7 @@ module.exports = async (req, res, next) => {
         errormessage: "토큰에 해당하는 사용자가 존재하지 않습니다.",
       });
     }
+
     res.locals.user = user;
     next();
   } catch (error) {

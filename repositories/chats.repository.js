@@ -1,4 +1,5 @@
 const Chats = require("../schema/chats.js");
+const Messages = require("../schema/messages.js");
 
 class ChatRepository {
   createNewChat = async (
@@ -36,61 +37,45 @@ class ChatRepository {
     }
   };
 
-  // getMyOneChat = async (chat_id) => {
-  //   try {
-  //     const chatContents = await this.chatsModel.findOne({
-  //       include: [
-  //         {
-  //           model: Products,
-  //           attributes: [],
-  //           required: true,
-  //         },
-  //       ],
-  //       attributes: [
-  //         "updatedAt",
-  //         "content",
-  //         "buyer_id",
-  //         "seller_id",
-  //         [Sequelize.literal("`Product`.`product_id`"), "product_id"],
-  //         [Sequelize.literal("`Product`.`title`"), "title"],
-  //         [Sequelize.literal("`Product`.`is_sold`"), "is_sold"],
-  //       ],
-  //       where: { chat_id },
-  //     });
-
-  //     return chatContents;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
-
-  // saveChatContents = async (chat_id, chatRecord) => {
-  //   try {
-  //     await this.chatsModel.update(
-  //       {
-  //         content: Sequelize.literal(
-  //           `JSON_ARRAY_APPEND(content, "$", '${JSON.stringify(chatRecord)}')`
-  //         ),
-  //       },
-  //       { where: { chat_id } }
-  //     );
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
-
-  checkBuyerIdByChatId = async (chat_id) => {
+  getLatestMessage = async (chat_id) => {
     try {
-      return await this.chatsModel.findOne({
-        attributes: ["buyer_id"],
-        where: { chat_id },
-      });
+      return await Messages.findOne({ chat_id })
+        .sort({ createdAt: "desc" })
+        .limit(1)
+        .exec();
     } catch (error) {
       throw error;
     }
   };
 
-  checkChatExists = async (product_id) => {
+  saveChatContents = async (chat_id, text, sender_id) => {
+    try {
+      const newMessage = new Messages({ chat_id, text, sender_id });
+      return await newMessage.save();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  getAllMessages = async (chat_id) => {
+    try {
+      return await Messages.find({ chat_id })
+        .sort({ createdAt: "desc" })
+        .exec();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  getOneChatInfo = async (chat_id) => {
+    try {
+      return await Chats.findOne({ _id: chat_id }).exec();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  checkChatExistsByProductId = async (product_id) => {
     try {
       return await Chats.findOne({ product_id }).exec();
     } catch (error) {

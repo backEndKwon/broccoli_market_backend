@@ -30,30 +30,13 @@ class ChatController {
     }
   };
 
-
-  // GET: 1:1 채팅 내역 조회
-  getMyOneChat = async (req, res, next) => {
-    const { chat_id } = req.params;
-    const { user_id, nickname } = res.locals.user;
-    try {
-      const allChatHistory = await this.chatService.getMyOneChat(
-        chat_id,
-        user_id,
-        nickname
-      );
-      res.status(201).json({ allChatHistory });
-    } catch (error) {
-      next(error, req, res, "채팅 내역 조회에 실패하였습니다.");
-    }
-  };
-
-  // PATCH: 1:1 채팅 내역 저장
+  // POST: 1:1 채팅 내역 저장
   saveChatContents = async (req, res, next) => {
     try {
       const { chat_id } = req.params;
-      const { contents } = req.body;
+      const { text } = req.body;
       const { user_id } = res.locals.user;
-      await this.chatService.saveChatContents(chat_id, contents, user_id);
+      await this.chatService.saveChatContents(chat_id, text, user_id);
       res
         .status(201)
         .json({ message: "채팅 내역 저장이 정상적으로 완료되었습니다." });
@@ -61,6 +44,23 @@ class ChatController {
       next(error, req, res, "채팅 내역 저장에 실패하였습니다.");
     }
   };
+
+  // GET: 1:1 채팅 내역 조회
+  getMyOneChat = async (req, res, next) => {
+    const { chat_id } = req.params;
+    const { user_id, nickname } = res.locals.user;
+    try {
+      const chatInfo = await this.chatService.getMyOneChat(
+        chat_id,
+        user_id,
+        nickname
+      );
+      res.status(200).json({ chatInfo });
+    } catch (error) {
+      next(error, req, res, "채팅 내역 조회에 실패하였습니다.");
+    }
+  };
+
 }
 
 module.exports = ChatController;
