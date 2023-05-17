@@ -43,9 +43,38 @@ class AuthService {
 
   };
 
+  kakaoLogin = async (email) => {
+    const user = await this.authRepository.socialFindOneUser(email);
+    const accessToken = jwt.sign(
+      { nickname: user.nickname },
+      process.env.SECRET_KEY,
+      {
+        expiresIn: process.env.ACCESS_EXPIRES,
+      }
+    );
+    const accessObject = { type: "Bearer", token: accessToken };
+
+    const refreshToken = jwt.sign(
+      { nickname: user.nickname },
+      process.env.REFRESH_SECRET_KEY,
+      {
+        expiresIn: process.env.REFRESH_EXPIRES,
+      }
+    );
+    const refreshObject = {type: "Bearer", token: refreshToken}
+
+    return { accessObject, refreshObject }; 
+
+  };
+
   findOneUser = async (id) => {
     const findOneUserData = this.authRepository.findOneUser(id);
     return findOneUserData;
+  };
+
+  socialFindOneUser = async (email) => {
+    const socialFindOneUserData = this.authRepository.socialFindOneUser(email);
+    return socialFindOneUserData;
   };
 
   logout = async (user_id) => {
