@@ -1,4 +1,4 @@
-const { Products, Likes } = require("../models");
+const { Products, Likes } = require("../models/mysql");
 
 class LikeRepository {
   /* Product 존재확인용 */

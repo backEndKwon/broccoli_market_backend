@@ -3,18 +3,7 @@ const ChatService = require("../services/chats.service");
 class ChatController {
   chatService = new ChatService();
 
-  // GET: 자신의 전체 채팅 목록 조회
-  getMyAllChats = async (req, res, next) => {
-    try {
-      const { user_id } = res.locals.user;
-      const chatLists = await this.chatService.getMyAllChats(user_id);
-      res.status(200).json({ chatLists });
-    } catch (error) {
-      next(error, req, res, "채팅 내역 조회에 실패하였습니다.");
-    }
-  };
-
-  // POST: 새로운 1:1 채팅 생성
+  // POST: 새로운 1:1 채팅 생성 
   createNewChat = async (req, res, next) => {
     const { product_id } = req.params;
     const { user_id, nickname } = res.locals.user;
@@ -29,6 +18,18 @@ class ChatController {
       next(error, req, res, "새로운 채팅 생성에 실패하였습니다.");
     }
   };
+
+  // GET: 자신의 전체 채팅 목록 조회
+  getMyAllChats = async (req, res, next) => {
+    try {
+      const { user_id } = res.locals.user;
+      const chatLists = await this.chatService.getMyAllChats(user_id);
+      res.status(200).json({ chatLists });
+    } catch (error) {
+      next(error, req, res, "채팅 내역 조회에 실패하였습니다.");
+    }
+  };
+
 
   // GET: 1:1 채팅 내역 조회
   getMyOneChat = async (req, res, next) => {

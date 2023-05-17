@@ -1,22 +1,24 @@
-const { Users, Users_info } = require("../models");
-
+const { Users, Users_info } = require("../models/mysql");
 
 class AuthRepository {
   createUser = async (usersData, users_InfoData) => {
-    const createdUser = await Users.create({
-      id: usersData.id,
-      nickname: usersData.nickname,
-      password: usersData.password,
-      Users_info: {
-        email: users_InfoData.email,
-        address: users_InfoData.address,
-        sold_item: users_InfoData.sold_item,
-        likes: users_InfoData.likes,
-        bought_item: users_InfoData.bought_item,
+    const createdUser = await Users.create(
+      {
+        id: usersData.id,
+        nickname: usersData.nickname,
+        password: usersData.password,
+        Users_info: {
+          email: users_InfoData.email,
+          address: users_InfoData.address,
+          sold_item: users_InfoData.sold_item,
+          likes: users_InfoData.likes,
+          bought_item: users_InfoData.bought_item,
+        },
+      },
+      {
+        include: [Users_info],
       }
-    }, {
-      include: [Users_info]
-    });
+    );
     return createdUser;
   };
 

@@ -1,7 +1,7 @@
-const ProductsRepository = require('./../repositories/products.repository');
-const { Products, Users, Users_info } = require('./../models/');
+const ProductsRepository = require("./../repositories/products.repository");
+const { Products, Users, Users_info } = require("../models/mysql");
 const { Transaction } = require("sequelize");
-const { sequelize } = require("../models");
+const { sequelize } = require("../models/mysql");
 
 class ProductsService {
   productsRepository = new ProductsRepository(Products, Users, Users_info);
@@ -57,7 +57,7 @@ class ProductsService {
     if (!product) {
       const error = new Error();
       error.errorCode = 404;
-      error.message = '상품이 존재하지 않습니다.';
+      error.message = "상품이 존재하지 않습니다.";
       throw error;
     }
 
@@ -102,13 +102,13 @@ class ProductsService {
     if (!product) {
       const error = new Error();
       error.errorCode = 404;
-      error.message = '상품이 존재하지 않습니다.';
+      error.message = "상품이 존재하지 않습니다.";
       throw error;
     }
     if (product.user_id !== user_id) {
       const error = new Error();
       error.errorCode = 403;
-      error.message = '상품 수정 권한이 존재하지 않습니다.';
+      error.message = "상품 수정 권한이 존재하지 않습니다.";
       throw error;
     }
     await this.productsRepository.updateProduct(
@@ -139,13 +139,13 @@ class ProductsService {
     if (!product) {
       const error = new Error();
       error.errorCode = 404;
-      error.message = '상품이 존재하지 않습니다.';
+      error.message = "상품이 존재하지 않습니다.";
       throw error;
     }
     if (product.user_id !== user_id) {
       const error = new Error();
       error.errorCode = 403;
-      error.message = '상품 삭제 권한이 없습니다.';
+      error.message = "상품 삭제 권한이 없습니다.";
       throw error;
     }
 
@@ -159,7 +159,9 @@ class ProductsService {
           isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
         },
         async (t) => {
-          const product = await this.productsRepository.findDetailProduct(product_id);
+          const product = await this.productsRepository.findDetailProduct(
+            product_id
+          );
           if (!product) {
             const error = new Error();
             error.errorCode = 404;
@@ -173,14 +175,15 @@ class ProductsService {
             throw error;
           }
           await this.productsRepository.makeProductSold(product_id);
-        })
+        }
+      );
     } catch (error) {
       throw error;
     }
   };
 
   searchProduct = async (keyword) => {
-    const keywords = keyword.split(' ');
+    const keywords = keyword.split(" ");
 
     const result = await this.productsRepository.searchProduct(keywords);
 
@@ -199,7 +202,6 @@ class ProductsService {
       };
     });
   };
-
 }
 
 module.exports = ProductsService;

@@ -1,4 +1,4 @@
-const { Products, Likes } = require("../models");
+const { Products, Likes } = require("../models/mysql");
 
 class MypageRepository {
   /* 1.판매 중인 + 구매한  상품 목록조회 */

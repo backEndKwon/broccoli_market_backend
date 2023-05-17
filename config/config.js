@@ -35,6 +35,11 @@ const s3 = {
 const corsOption = {
   allowedOrigin: process.env.FE_URL,
 }
-  
+const mongodb = {
+  id: process.env.MONGODB_ID,
+  password: process.env.MONGODB_PW,
+  cluster: process.env.MONGODB_CLUSTER,
+  db: process.env.MONGODB_NAME,
+} 
 
-module.exports = { development, test, jwt, bcrypt, host, s3, corsOption };
+module.exports = { development, test, jwt, bcrypt, host, s3, corsOption, mongodb };
