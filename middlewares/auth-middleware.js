@@ -33,9 +33,9 @@ module.exports = async (req, res, next) => {
         token,
         process.env.REFRESH_SECRET_KEY
       );
-      const user_id = decodedRefreshToken.user_id;
+      const nickname = decodedRefreshToken.nickname;
 
-      const user = await Users.findOne({ where: { nickname } });
+      const user = await Users.findOne({ where: {nickname} });
       
       if (!user) {
         return res.status(401).json({
