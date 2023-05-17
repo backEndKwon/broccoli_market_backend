@@ -7,20 +7,19 @@ class ChatRepository {
     this.chatsModel = ChatsModel;
   }
 
-  getMyAllChats = async (buyer_id) => {
+  getMyAllChats = async (user_id) => {
     try {
       const chatLists = await this.chatsModel.findAll({
         include: [
           {
             model: Products,
-            attributes: ["user_id", "product_id", "title", "is_sold"],
+            attributes: ["product_id", "title", "is_sold"],
             required: true,
           },
         ],
-        attributes: ["updatedAt", "content", "chat_id"],
-        group: ["Chats.chat_id"],
+        attributes: ["updatedAt", "content", "chat_id", "buyer_id"],
         order: [["updatedAt", "DESC"]],
-        where: { buyer_id },
+        where: { [Op.or]: [{ buyer_id: user_id }, { seller_id: user_id }] },
       });
       return chatLists;
     } catch (error) {
@@ -57,6 +56,7 @@ class ChatRepository {
           "updatedAt",
           "content",
           "buyer_id",
+          "seller_id",
           [Sequelize.literal("`Product`.`product_id`"), "product_id"],
           [Sequelize.literal("`Product`.`title`"), "title"],
           [Sequelize.literal("`Product`.`is_sold`"), "is_sold"],

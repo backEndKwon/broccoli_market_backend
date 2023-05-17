@@ -35,7 +35,11 @@ class ChatController {
     const { chat_id } = req.params;
     const { user_id, nickname } = res.locals.user;
     try {
-      const allChatHistory = await this.chatService.getMyOneChat(chat_id, user_id, nickname);
+      const allChatHistory = await this.chatService.getMyOneChat(
+        chat_id,
+        user_id,
+        nickname
+      );
       res.status(201).json({ allChatHistory });
     } catch (error) {
       next(error, req, res, "채팅 내역 조회에 실패하였습니다.");
