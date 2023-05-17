@@ -2,8 +2,8 @@ const MypageService = require("../../../services/mypage.service");
 
 // mocking하기위한 객체 세팅
 let mockMypageModel = {
+  getMySellingProducts: jest.fn(),
   getMySoldProducts: jest.fn(),
-  getMyBuyProducts: jest.fn(),
   getMyLikeProducts: jest.fn(),
 };
 
@@ -16,51 +16,87 @@ describe("Mypage Service Unit Test", () => {
     jest.resetAllMocks();
   });
 
-  test("Mypage Service getMySoldProducts Method", async () => {
-    //판매상품 존재하지 않을경우 오류 메세지 반환
-    const value = null;
+  /* 1.판매 중인 상품 목록조회 */
+  test("Service Mypage 판매중인 상품조회(정상 진행 부분)", async () => {
+    // value 있을 경우
+    const value = [{}, {}];
+    mockMypageModel.getMySellingProducts = jest.fn(() => {
+      return value;
+    });
+    const sellProduct = await mypageService.getMySellingProducts(2);
+    expect(mockMypageModel.getMySellingProducts).toHaveBeenCalledTimes(1);
+    expect(mockMypageModel.getMySellingProducts).toHaveBeenCalledWith(2);
+    expect(sellProduct).toEqual(value);
+  });
+  test("Service Mypage 판매중인 상품조회(Error부분)", async () => {
+    //value 가 존재하지않아 오류 발생할 경우
+    const value = [];
+    mockMypageModel.getMySellingProducts = jest.fn(() => {
+      return value;
+    });
+    try {
+      //가정=>user_id : 2
+      const sellProduct = await mypageService.getMySellingProducts(2);
+    } catch (error) {
+      expect(mockMypageModel.getMySellingProducts).toHaveBeenCalledTimes(1);
+      expect(mockMypageModel.getMySellingProducts).toHaveBeenCalledWith(2);
+      expect(error.message).toEqual("판매 상품이 존재하지 않습니다.");
+    }
+  });
+
+  /* 2.판매완료(is_sold = true) 상품 목록조회 */
+  test("Service Mypage 판매완료 상품조회(정상 진행 부분)", async () => {
+    // value 있을 경우
+    const value = [{}, {}];
     mockMypageModel.getMySoldProducts = jest.fn(() => {
       return value;
     });
-    const soldProduct = await mypageService.getMyBuyProducts(1)
-    try {
-    // await mypageService.getMySoldProducts(1);
-    } catch (error) {
-      expect(mockMypageModel.getMySoldProducts).toHaveBeenCalledTimes(1);
-      expect(mockMypageModel.getMySoldProducts).toHaveBeenCalledWith(1);
-      expect(error).toEqual("판매 상품이 존재하지 않습니다.");
-    }
+    const soldProduct = await mypageService.getMySoldProducts(2);
+    expect(mockMypageModel.getMySoldProducts).toHaveBeenCalledTimes(1);
+    expect(mockMypageModel.getMySoldProducts).toHaveBeenCalledWith(2);
+    expect(soldProduct).toEqual(value);
   });
-
-
-  test("Mypage Service getMyBuyProducts Method", async () => {
-    //판매상품 존재하지 않을경우 오류 메세지 반환
-    const value = 0;
-    mockMypageModel.getMyBuyProducts = jest.fn(() => {
+  test("Service Mypage 판매완료 상품조회(Error부분)", async () => {
+    //value 가 존재하지않아 오류 발생할 경우
+    const value = [];
+    mockMypageModel.getMySoldProducts = jest.fn(() => {
       return value;
     });
     try {
-    await mypageService.getMyBuyProducts(1);
+      //가정=>user_id : 2
+      const soldProduct = await mypageService.getMySoldProducts(2);
     } catch (error) {
-      expect(mockMypageModel.getMyBuyProducts).toHaveBeenCalledTimes(1);
-      expect(mockMypageModel.getMyBuyProducts).toHaveBeenCalledWith(1);
-      expect(error).toEqual("구매내역이 존재하지 않습니다.");
+      expect(mockMypageModel.getMySoldProducts).toHaveBeenCalledTimes(1);
+      expect(mockMypageModel.getMySoldProducts).toHaveBeenCalledWith(2);
+      expect(error.message).toEqual("구매내역이 존재하지 않습니다.");
     }
   });
-  test("Mypage Service getMyLikeProducts Method", async () => {
-    //판매상품 존재하지 않을경우 오류 메세지 반환
-    const value = null;
+
+  /* 3.자신이 좋아요누른 상품 목록조회 */
+  test("Service Mypage 관심등록 상품조회(정상 진행 부분)", async () => {
+    // value 있을 경우
+    const value = [{}, {}];
+    mockMypageModel.getMyLikeProducts = jest.fn(() => {
+      return value;
+    });
+    const likeProduct = await mypageService.getMyLikeProducts(2);
+    expect(mockMypageModel.getMyLikeProducts).toHaveBeenCalledTimes(1);
+    expect(mockMypageModel.getMyLikeProducts).toHaveBeenCalledWith(2);
+    expect(likeProduct).toEqual(value);
+  });
+  test("Service Mypage 관심등록 상품조회(Error부분)", async () => {
+    //value 가 존재하지않아 오류 발생할 경우
+    const value = [];
     mockMypageModel.getMyLikeProducts = jest.fn(() => {
       return value;
     });
     try {
-    const getMyLikeProducts = await mypageService.getMyLikeProducts(2);
+      //가정=>user_id : 2
+      const likeProduct = await mypageService.getMyLikeProducts(2);
     } catch (error) {
       expect(mockMypageModel.getMyLikeProducts).toHaveBeenCalledTimes(1);
-      expect(mockMypageModel.getMyLikeProducts).toHaveBeenCalledWith(1);
-      expect(error).toEqual("관심 상품이 존재하지 않습니다.");
+      expect(mockMypageModel.getMyLikeProducts).toHaveBeenCalledWith(2);
+      expect(error.message).toEqual("관심 상품이 존재하지 않습니다.");
     }
   });
-
-
 });

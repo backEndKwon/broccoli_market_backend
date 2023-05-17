@@ -6,10 +6,10 @@ const MypageController = require("../controllers/mypage.controller");
 const mypageController = new MypageController();
 
 // GET: 자신이 판매중인 상품 목록 조회
-router.get("/sold", authMiddleware, mypageController.getMySoldProducts);
+router.get("/selling", authMiddleware, mypageController.getMySellingProducts);
 
 // GET: 자신이 구매 확정한 내역
-router.get("/bought", authMiddleware, mypageController.getMyBuyProducts);
+router.get("/sold", authMiddleware, mypageController.getMySoldProducts);
 
 // GET: 관심 목록 조회(본인이 좋아요 누른)
 router.get("/likes", authMiddleware, mypageController.getMyLikeProducts);
