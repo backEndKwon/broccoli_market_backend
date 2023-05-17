@@ -12,7 +12,7 @@ class AuthController {
 
     kakaoLogin = async (req, res) => {
       const code = req.query.code;
-      
+      console.log(code)
       try { 
           // Access token 가져오기
           const res1 = await Axios.post('https://kauth.kakao.com/oauth/token', {}, {
@@ -23,7 +23,7 @@ class AuthController {
                   grant_type: 'authorization_code',
                   client_id: process.env.KAKAO_SECRET_KEY,
                   code: code,
-                  redirect_uri: "http://localhost:3002/api/auth/sociallogin"
+                  redirect_uri: "http://api.broccoli-market.store/api/auth/sociallogin" // 로컬 테스트 시 로컬 서버 URI
               }
           });
           
@@ -37,18 +37,31 @@ class AuthController {
   
           const data = res2.data;
           const user = await this.authService.socialFindOneUser(data.kakao_account.email)
-          
+          console.log(res2.data)
           if (!user) {
-              res.redirect('http://localhost:3000/signup');
+              res.redirect('http://broccoli-market.store/signup'); // 로컬 테스트 시 'http:://프론트 포트/signup'
               return;
           } else {
-            res.redirect('http://localhost:3000')
+            
+            const userData = await this.authService.kakaoLogin(data.kakao_account.email);
+
+            res.cookie(
+              "authorization",
+              `${userData.accessObject.type} ${userData.accessObject.token}`
+            );
+      
+            res.cookie(
+              "refreshToken",
+              `${userData.refreshObject.type} ${userData.refreshObject.token}`
+               );
+            
+            res.status(200).redirect('http://broccoli-market.store:3000') // 로컬 테스트 시 'http:://프론트 포트'
           }
       } catch (error) {
           console.error(error);
-          res.status(400).end('로그인에 실패했습니다.');
+          res.status(400).json({errorMessage : '로그인에 실패했습니다.'});
       }
-    };
+    };    
     
     authEmail = async (req, res) => {
       const { email } = req.body;
