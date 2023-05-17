@@ -1,5 +1,5 @@
 const MypageRepository = require("../repositories/mypage.repository");
-const { Products, Likes } = require("../models/index.js");
+const { Products, Likes } = require("../models/mysql");
 
 class MypageService {
   mypageRepository = new MypageRepository(Products, Likes);

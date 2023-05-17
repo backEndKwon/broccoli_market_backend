@@ -1,5 +1,5 @@
 const ProductsRepository = require('./../repositories/products.repository');
-const { Products, Users, Users_info, sequelize } = require('../models/');
+const { Products, Users, Users_info, sequelize } = require('../models/mysql');
 const { Transaction } = require("sequelize");
 
 class ProductsService {
