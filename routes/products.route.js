@@ -33,6 +33,9 @@ router.put("/:product_id/likes", authMiddleware, likeController.putLikes);
 // 중고거래 상품 검색
 router.get('/search', productsController.searchProduct);
 
+// 중고거래 지역 매물 조회
+router.get('/region', productsController.getRegionProduct);
+
 // 중고거래 상품 검색 (ELK)
 router.get('/search/elk', productsController.elkSearchProduct)
 

@@ -219,7 +219,26 @@ class ProductsService {
       return {
         product_id: product.product_id,
         title: product.title,
-        address: product.address,
+        address: product.Users_info.address,
+        price: product.price,
+        category: product.category,
+        likes: product.likes,
+        views: product.views,
+        createdAt: product.createdAt,
+        is_sold: product.is_sold,
+        photo_ip: product.photo_ip,
+      };
+    });
+  };
+
+  getRegionProduct = async (region) => {
+    const result = await this.productsRepository.getRegionProduct(region);
+
+    return result.map((product) => {
+      return {
+        product_id: product.product_id,
+        title: product.title,
+        address: product.Users_info.address,
         price: product.price,
         category: product.category,
         likes: product.likes,

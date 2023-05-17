@@ -129,10 +129,27 @@ class ProductsRepository {
           }
         }
       },
+      include: [
+        {
+          model: this.usersInfoModel,
+          attibutes: ['address']
+        }
+      ]
     };
     const results = await this.model.findAll(query);
     return results;
   };
+
+  getRegionProduct = async (region) => {
+    return await this.model.findAll({
+      include: [
+        {
+          model: this.usersInfoModel,
+          where: { address: { [Op.substring]: region } }
+        },
+      ],
+    })
+  }
 
   findSellerInfoByProductId = async (product_id) => {
     return await this.model.findOne({

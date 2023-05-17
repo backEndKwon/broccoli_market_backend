@@ -47,7 +47,8 @@ class ProductsController {
     try {
       const { product_id } = req.params;
 
-      if (product_id === 'search') {
+      if (product_id === 'search' ||
+          product_id === 'region') {
         return next();
       }
 
@@ -123,6 +124,19 @@ class ProductsController {
       return res.status(200).json({ result });
     } catch (error) {
       next(error, req, res, '상품 검색에 실패하였습니다.');
+    }
+  };
+
+  // 중고거래 지역 매물 조회
+  getRegionProduct = async (req, res, next) => {
+    try {
+      const region = req.query.region;
+
+      const products = await this.productsService.getRegionProduct(region);
+
+      return res.status(200).json({ products });
+    } catch (error) {
+      next(error, req, res, "지역 매물 조회에 실패하였습니다.");
     }
   };
 
