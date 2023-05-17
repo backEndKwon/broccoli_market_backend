@@ -1,6 +1,6 @@
 const ChatRepository = require("../repositories/chats.repository");
 const ProductsRepository = require("../repositories/products.repository");
-const { Products, Users, Users_info, sequelize } = require("../models/mysql");
+const { Products, Users, Users_info, sequelize } = require("../models");
 const { Transaction } = require("sequelize");
 
 class ChatService {
@@ -110,11 +110,13 @@ class ChatService {
   getMyAllChats = async (user_id) => {
     try {
       const chatLists = await this.chatRepository.getMyAllChats(user_id);
-      const allMyChats = await Promise.all(chatLists.map(async (chat) => ({
-        chat_id: chat._id,
-        updatedAt: chat.updatedAt,
-        is_sold: chat.is_sold,
-      })));
+      const allMyChats = await Promise.all(
+        chatLists.map(async (chat) => ({
+          chat_id: chat._id,
+          updatedAt: chat.updatedAt,
+          is_sold: chat.is_sold,
+        }))
+      );
       return allMyChats;
     } catch (error) {
       throw error;

@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Users } = require("../models/mysql");
+const { Users } = require("../models");
 const redisClient = require("../utils/redis.js");
 require("dotenv").config();
 
@@ -36,7 +36,7 @@ module.exports = async (req, res, next) => {
       const user_id = decodedRefreshToken.user_id;
 
       const user = await Users.findOne({ where: { nickname } });
-      
+
       if (!user) {
         return res.status(401).json({
           errormessage: "리프레시 토큰에 해당하는 사용자가 존재하지 않습니다.",

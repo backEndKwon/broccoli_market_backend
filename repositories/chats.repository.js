@@ -1,4 +1,4 @@
-const Chats = require("../models/mongodb/chats.js");
+const Chats = require("../schema/chats.js");
 
 class ChatRepository {
   createNewChat = async (

@@ -1,4 +1,4 @@
-const { Users, Users_info } = require("../models/mysql");
+const { Users, Users_info } = require("../models");
 
 class AuthRepository {
   createUser = async (usersData, users_InfoData) => {

@@ -1,5 +1,5 @@
 const AuthRepository = require("../repositories/auth.repository");
-const { Users } = require("../models/mysql");
+const { Users } = require("../models");
 const redisClient = require("../utils/redis");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();

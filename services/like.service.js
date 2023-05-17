@@ -1,6 +1,6 @@
 const LikeRepository = require("../repositories/like.repository");
 const { Transaction } = require("sequelize");
-const { Likes, sequelize } = require("../models/mysql");
+const { Likes, sequelize } = require("../models");
 
 class LikeService {
   likeRepository = new LikeRepository(Likes);
