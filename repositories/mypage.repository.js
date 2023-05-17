@@ -1,14 +1,10 @@
 // const { Products, Likes } = require("../models");
-//mocking이 어려운 상태
-
 //DI(Dependency Injection)진행
 
 class MypageRepository {
-
-  constructor(ProductsModel,LikesModel){
-    this.ProductsModel = ProductsModel
-    this.LikesModel = LikesModel
-
+  constructor(ProductsModel, LikesModel) {
+    this.ProductsModel = ProductsModel;
+    this.LikesModel = LikesModel;
   }
   /* 1.판매 중인 + 구매한  상품 목록조회 */
   getMySoldProducts = async (user_id) => {
@@ -28,7 +24,9 @@ class MypageRepository {
 
   /* 3.자신이 좋아요누른 상품 목록조회 */
   getMyLikeProducts = async (user_id) => {
-    const fingMyLikeProducts = await this.LikesModel.findAll({ where: { user_id } });
+    const fingMyLikeProducts = await this.LikesModel.findAll({
+      where: { user_id },
+    });
     const ProductId = fingMyLikeProducts.map((a) => a.product_id);
     const getMyLikeProducts = await this.ProductsModel.findAll({
       where: { product_id: ProductId },
