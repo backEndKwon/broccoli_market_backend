@@ -1,7 +1,8 @@
 const MypageRepository = require("../repositories/mypage.repository");
+const { Products, Likes } = require("../models/index.js");
 
 class MypageService {
-  mypageRepository = new MypageRepository();
+  mypageRepository = new MypageRepository(Products, Likes);
 
   /* 1.판매 중인 상품 목록조회 */
   getMySoldProducts = async (user_id) => {
@@ -14,7 +15,7 @@ class MypageService {
       error.message = "판매 상품이 존재하지 않습니다.";
       throw error;
     }
-    return getMySoldProducts;
+    return getMySoldProducts.sort((a, b) => b.createdAt - a.createdAt);
   };
 
   /* 2.구매내역 상품 목록조회 */
@@ -22,14 +23,13 @@ class MypageService {
     const getMyBuyProducts = await this.mypageRepository.getMyBuyProducts(
       user_id
     );
-    console.log(getMyBuyProducts.is_sold);
     if (getMyBuyProducts.length === 0) {
       const error = new Error();
       error.errorCode = 404;
       error.message = "구매내역이 존재하지 않습니다.";
       throw error;
     }
-    return getMyBuyProducts;
+    return getMyBuyProducts.sort((a, b) => b.createdAt - a.createdAt);
   };
 
   /* 3.자신이 좋아요누른 상품 목록조회 */
@@ -43,7 +43,7 @@ class MypageService {
       error.message = "관심 상품이 존재하지 않습니다.";
       throw error;
     }
-    return getMyLikeProducts;
+    return getMyLikeProducts.sort((a, b) => b.createdAt - a.createdAt);
   };
 }
 

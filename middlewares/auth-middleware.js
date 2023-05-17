@@ -1,13 +1,12 @@
 const jwt = require("jsonwebtoken");
 const { Users } = require("../models");
 const redisClient = require("../utils/redis.js");
+require("dotenv").config();
 
 module.exports = async (req, res, next) => {
   const { authorization } = req.cookies;
-  console.log("header 로그", req.cookies);
   const [authType, authToken] = (authorization ?? "").split(" ");
-  console.log("auth 에러로그", authorization);
-  console.log("split 에러로그", authType, authToken);
+
   try {
     if (authType !== "Bearer" || !authToken) {
       console.log("에러메세지: 로그인이 필요한 기능입니다.");
@@ -16,9 +15,9 @@ module.exports = async (req, res, next) => {
         .json({ errormessage: "로그인이 필요한 기능입니다." });
     }
     const decodedToken = jwt.verify(authToken, process.env.SECRET_KEY);
-    const user_id = decodedToken.user_id;
+    const nickname = decodedToken.nickname;
 
-    const user = await Users.findOne({ where: { user_id } });
+    const user = await Users.findOne({ where: { nickname } });
     if (!user) {
       return res.status(401).json({
         errormessage: "토큰에 해당하는 사용자가 존재하지 않습니다.",
@@ -34,9 +33,9 @@ module.exports = async (req, res, next) => {
         token,
         process.env.REFRESH_SECRET_KEY
       );
-      const user_id = decodedRefreshToken.user_id;
+      const nickname = decodedRefreshToken.nickname;
 
-      const user = await Users.findOne({ where: { user_id } });
+      const user = await Users.findOne({ where: {nickname} });
       
       if (!user) {
         return res.status(401).json({
@@ -45,7 +44,7 @@ module.exports = async (req, res, next) => {
       }
 
       const newAccessToken = jwt.sign(
-        { user_id: user.user_id },
+        { nickname: user.nickname },
         process.env.SECRET_KEY,
         {
           expiresIn: process.env.ACCESS_EXPIRES,

@@ -2,11 +2,53 @@ const AuthService = require('../services/auth.service');
 const nodemailer = require("nodemailer");
 const path = require('path');
 const ejs = require('ejs');
+const Axios = require('axios');
 const appDir = path.dirname(require.main.filename);
 const redisClient = require('../utils/redis.js')
+require("dotenv").config();
 
 class AuthController {
     authService = new AuthService();
+
+    // kakaoLogin = async (req, res) => {
+    //   const code = req.query.code;
+      
+    //   try { 
+    //       // Access token 가져오기
+    //       const res1 = await Axios.post('https://kauth.kakao.com/oauth/token', {}, {
+    //           headers: {
+    //               "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
+    //           },
+    //           params:{
+    //               grant_type: 'authorization_code',
+    //               client_id: process.env.KAKAO_SECRET_KEY,
+    //               code: code,
+    //               redirect_uri: "http://localhost:3000/api/auth/sociallogin"
+    //           }
+    //       });
+          
+    //       // Access token을 이용해 정보 가져오기
+    //       const res2 = await Axios.post('https://kapi.kakao.com/v2/user/me', {}, {
+    //           headers: {
+    //               "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+    //               'Authorization': 'Bearer ' + res1.data.access_token
+    //           }
+    //       });
+  
+    //       const data = res2.data;
+    //       const user = await this.authService.socialFindOneUser(data.kakao_account.email)
+          
+    //       if (!user) {
+    //           res.redirect('http://localhost:3001/signup');
+    //           return;
+    //       } else {
+    //         res.redirect('http://localhost:3001')
+    //       }
+    //   } catch (error) {
+    //       console.error(error);
+    //       res.status(400).end('로그인에 실패했습니다.');
+    //   }
+    // };
     
     authEmail = async (req, res) => {
       const { email } = req.body;
@@ -52,58 +94,6 @@ class AuthController {
           .json({ errorMessage: "인증 이메일 전송에 실패하였습니다." });
       }
     };
-
-    // 소셜 로그인 미구현 수정 중
-    // kakaoLogin = async (req, res) => {
-    //   const code = req.query.code;
-    //   const authToken = await Axios.post('https://kauth.kakao.com/oauth/token', {}, {
-    //             headers: {
-    //                 "Content-Type": "application/x-www-form-urlencoded"
-    //             },
-    //             params:{
-    //                 grant_type: 'authorization_code',
-    //                 client_id: CONFIG.KAKAO.RESTAPIKEY,
-    //                 code,
-    //                 redirect_uri: localhost:3000/api/auth/kakao
-    //             }
-    //         })
-
-      
-    //   const kakaoUser = await jwt.verify(token, process.env.KAKAO_SECRET_KEY);
-    //   const user_id = kakaoUser.user_id
-    //   const user = await this.authService.findOneUser(id);
-
-    //   try {
-        
-    //     if (!user) {
-    //       req.flash( message , "회원가입이 필요합니다. 가입 후 이용해 주세요.");
-    //       res.redirect('/signup')
-    //       return ;
-    //     }
-      
-  
-    //     const userData = await this.authService.login(id);
-  
-    //     res.cookie(
-    //       "authorization",
-    //       `${userData.accessObject.type} ${userData.accessObject.token}`
-    //     );
-  
-    //     res.cookie(
-    //       "refreshToken",
-    //       `${userData.refreshObject.type} ${userData.refreshObject.token}`
-    //        );
-    //     res.status(200).json({
-    //       authorization: `${userData.accessObject.type} ${userData.accessObject.token}`,
-    //       refreshToken: `${userData.refreshObject.type} ${userData.refreshObject.token}`,
-    //     });
-    //   } catch (err) {
-    //     console.error("로그인 에러 로그", err);
-    //     res.status(400).json({
-    //       errorMessage: "로그인에 실패하였습니다.",
-    //     });
-    //   }
-    // };
     
     signup = async (req, res) => {
         const {id, nickname, password, email, address, authCode } = req.body;
