@@ -47,7 +47,8 @@ class ProductsController {
     try {
       const { product_id } = req.params;
 
-      if (product_id === 'search') {
+      if (product_id === 'search' ||
+          product_id === 'region') {
         return next();
       }
 
@@ -126,12 +127,26 @@ class ProductsController {
     }
   };
 
+  // 중고거래 지역 매물 조회
+  getRegionProduct = async (req, res, next) => {
+    try {
+      const region = req.query.region;
+
+      const products = await this.productsService.getRegionProduct(region);
+
+      return res.status(200).json({ products });
+    } catch (error) {
+      next(error, req, res, "지역 매물 조회에 실패하였습니다.");
+    }
+  };
+
   // 중고거래 상품 검색 (ELK)
   elkSearchProduct = async (req, res, next) => {
     try {
       const keyword = req.query.keyword;
     
       // Elasticsearch에 대한 연결을 만듭니다.
+      // host 및 nodes 주소는 배포 환경에 맞는 Elasticsearch 실제 구동 주소로 기입해야 합니다!
       const client = new es.Client({
         host: 'http://localhost:9200',
         nodes: ['http://localhost:9200'],
@@ -188,6 +203,7 @@ class ProductsController {
       const keyword = req.query.keyword;
     
       // Elasticsearch에 대한 연결을 만듭니다.
+      // host 및 nodes 주소는 배포 환경에 맞는 Elasticsearch 실제 구동 주소로 기입해야 합니다!
       const client = new es.Client({
         host: 'http://localhost:9200',
         nodes: ['http://localhost:9200'],
