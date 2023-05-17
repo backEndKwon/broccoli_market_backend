@@ -1,6 +1,7 @@
 const MypageService = require("../services/mypage.service");
 
 class MypageController {
+  
   mypageService = new MypageService();
   /* 1.판매 중인 상품 목록조회 */
 
