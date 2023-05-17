@@ -9,45 +9,45 @@ const redisClient = require('../utils/redis.js')
 class AuthController {
     authService = new AuthService();
 
-    // kakaoLogin = async (req, res) => {
-    //   const code = req.query.code;
+    kakaoLogin = async (req, res) => {
+      const code = req.query.code;
       
-    //   try { 
-    //       // Access token 가져오기
-    //       const res1 = await Axios.post('https://kauth.kakao.com/oauth/token', {}, {
-    //           headers: {
-    //               "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
-    //           },
-    //           params:{
-    //               grant_type: 'authorization_code',
-    //               client_id: process.env.KAKAO_SECRET_KEY,
-    //               code: code,
-    //               redirect_uri: "http://localhost:3000/api/auth/sociallogin"
-    //           }
-    //       });
+      try { 
+          // Access token 가져오기
+          const res1 = await Axios.post('https://kauth.kakao.com/oauth/token', {}, {
+              headers: {
+                  "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
+              },
+              params:{
+                  grant_type: 'authorization_code',
+                  client_id: process.env.KAKAO_SECRET_KEY,
+                  code: code,
+                  redirect_uri: "http://localhost:3002/api/auth/sociallogin"
+              }
+          });
           
-    //       // Access token을 이용해 정보 가져오기
-    //       const res2 = await Axios.post('https://kapi.kakao.com/v2/user/me', {}, {
-    //           headers: {
-    //               "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-    //               'Authorization': 'Bearer ' + res1.data.access_token
-    //           }
-    //       });
+          // Access token을 이용해 정보 가져오기
+          const res2 = await Axios.post('https://kapi.kakao.com/v2/user/me', {}, {
+              headers: {
+                  "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+                  'Authorization': 'Bearer ' + res1.data.access_token
+              }
+          });
   
-    //       const data = res2.data;
-    //       const user = await this.authService.socialFindOneUser(data.kakao_account.email)
+          const data = res2.data;
+          const user = await this.authService.socialFindOneUser(data.kakao_account.email)
           
-    //       if (!user) {
-    //           res.redirect('http://localhost:3001/signup');
-    //           return;
-    //       } else {
-    //         res.redirect('http://localhost:3001')
-    //       }
-    //   } catch (error) {
-    //       console.error(error);
-    //       res.status(400).end('로그인에 실패했습니다.');
-    //   }
-    // };
+          if (!user) {
+              res.redirect('http://localhost:3000/signup');
+              return;
+          } else {
+            res.redirect('http://localhost:3000')
+          }
+      } catch (error) {
+          console.error(error);
+          res.status(400).end('로그인에 실패했습니다.');
+      }
+    };
     
     authEmail = async (req, res) => {
       const { email } = req.body;
