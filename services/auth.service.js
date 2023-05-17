@@ -2,6 +2,7 @@ const AuthRepository = require("../repositories/auth.repository");
 const { Users } = require("../models/mysql");
 const redisClient = require("../utils/redis");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 class AuthService {
   constructor(authRepository) {
@@ -27,7 +28,7 @@ class AuthService {
   login = async (id) => {
     const user = await this.authRepository.findOneUser(id);
     const accessToken = jwt.sign(
-      { user_id: user.user_id },
+      { nickname: user.nickname },
       process.env.SECRET_KEY,
       {
         expiresIn: process.env.ACCESS_EXPIRES,
@@ -36,7 +37,7 @@ class AuthService {
     const accessObject = { type: "Bearer", token: accessToken };
 
     const refreshToken = jwt.sign(
-      { user_id: user.user_id },
+      { nickname: user.nickname },
       process.env.REFRESH_SECRET_KEY,
       {
         expiresIn: process.env.REFRESH_EXPIRES,
