@@ -1,5 +1,4 @@
 const ChatService = require("../services/chats.service");
-const { getSocketIO } = require("../modules/socket.js");
 
 class ChatController {
   chatService = new ChatService();
@@ -25,7 +24,6 @@ class ChatController {
         user_id,
         nickname
       );
-      // getSocketIO().emit("newChat", newChat);
       res.status(201).json({ newChat });
     } catch (error) {
       next(error, req, res, "새로운 채팅 생성에 실패하였습니다.");
