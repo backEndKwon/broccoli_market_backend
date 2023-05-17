@@ -1,61 +1,67 @@
 const ChatRepository = require("../repositories/chats.repository");
 const ProductsRepository = require("../repositories/products.repository");
-const { Chats, Products, Users, Users_info, sequelize } = require("../models");
-const { Transaction } = require("sequelize");
+const { Products, Users, Users_info } = require("../models");
+const { logger } = require("@aws-sdk/smithy-client");
 
 class ChatService {
-  chatRepository = new ChatRepository(Chats);
+  chatRepository = new ChatRepository();
   productsRepository = new ProductsRepository(Products, Users, Users_info);
 
-  // GET: 자신의 전체 채팅 목록 조회
+  // POST: 새로운 1:1 채팅 생성
+  createNewChat = async (product_id, buyer_id, buyer_nickname) => {
+    try {
+      // 이미 채팅이 존재하는 경우
+      const existChat = await this.chatRepository.checkChatExistsByProductId(
+        product_id
+      );
+
+      // 같은 product_id를 가지고, 해당 유저가 이미 채팅을 생성한 경우
+      if (existChat && existChat.members[0] === buyer_id) {
+        const error = new Error();
+        error.errorCode = 409;
+        error.message = "이미 채팅이 존재합니다.";
+        throw error;
+      }
+
+      // seller 정보
+      const seller_info =
+        await this.productsRepository.findSellerInfoByProductId(product_id);
+
+      const createdChat = await this.chatRepository.createNewChat(
+        product_id,
+        buyer_id,
+        seller_info.User.dataValues.user_id, // seller_id
+        buyer_nickname,
+        seller_info.User.dataValues.nickname, // seller_nickname
+        seller_info.dataValues.title, // title
+        seller_info.Users_info.dataValues.address // address
+      );
+
+      return {
+        chat_id: createdChat._id,
+        product_id,
+        buyer_id,
+        buyer_nickname,
+        seller_id: seller_info.User.dataValues.user_id,
+        seller_nickname: seller_info.User.dataValues.nickname,
+        title: seller_info.dataValues.title,
+        address: seller_info.Users_info.dataValues.address,
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
+
   getMyAllChats = async (user_id) => {
     try {
-      let allMyChats;
-      await sequelize.transaction(
-        {
-          isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
-        },
-        async (t) => {
-          const chatLists = await this.chatRepository.getMyAllChats(user_id);
-
-          allMyChats = await Promise.all(
-            chatLists.map(async (chat) => {
-              const { updatedAt, content, chat_id } = chat.dataValues;
-              const { product_id, title, is_sold } = chat.Product;
-              const seller_id = chat.Product.user_id;
-
-              const seller_info =
-                await this.productsRepository.findSellerInfoByProductId(
-                  product_id
-                );
-
-              // 경과 시간을 계산하기 위한 로직
-              const passedTime = getPassedTime(updatedAt);
-
-              // 최근 채팅 내용을 보여주기 위한 로직
-              const parsedContent = JSON.parse(content);
-              let lastestContent;
-              if(parsedContent.length > 0) {
-                const lastestContentBeforeParsing = parsedContent[parsedContent.length - 1];
-                lastestContent = JSON.parse(lastestContentBeforeParsing).content;
-              } else {
-                lastestContent = "";
-              }
-
-              return {
-                chat_id,
-                product_id,
-                seller_nickname: seller_info.User.dataValues.nickname,
-                seller_id,
-                address: seller_info.Users_info.dataValues.address,
-                title,
-                lastestContent,
-                updatedAt: passedTime,
-                is_sold,
-              };
-            })
-          );
-        }
+      const chatLists = await this.chatRepository.getMyAllChats(user_id);
+      const allMyChats = await Promise.all(
+        chatLists.map(async (chat) => ({
+          chat_id: chat._id,
+          updatedAt: chat.updatedAt,
+          is_sold: chat.is_sold,
+          latestMessage: await this.chatRepository.getLatestMessage(chat._id),
+        }))
       );
       return allMyChats;
     } catch (error) {
@@ -63,158 +69,71 @@ class ChatService {
     }
   };
 
-  // POST: 새로운 1:1 채팅 생성
-  createNewChat = async (product_id, buyer_id, buyer_nickname) => {
+  // POST: 1:1 채팅 메세지 저장
+  saveChatContents = async (chat_id, text, sender_id) => {
     try {
-      let newChat;
-      await sequelize.transaction(
-        {
-          isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
-        },
-        async (t) => {
-          // 이미 채팅이 존재하는 경우
-          const existChat = await this.chatRepository.checkChatExists(
-            product_id,
-            buyer_id
-          );
-          if (existChat) {
-            const error = new Error();
-            error.errorCode = 409;
-            error.message = "이미 채팅이 존재합니다.";
-            throw error;
-          }
+      const chatInfo = await this.chatRepository.getOneChatInfo(chat_id);
 
-          const createdChat = await this.chatRepository.createNewChat(
-            product_id,
-            buyer_id
-          );
+      if (
+        chatInfo.members[0] !== sender_id &&
+        chatInfo.members[1] !== sender_id
+      ) {
+        const error = new Error();
+        error.errorCode = 403;
+        error.message = "해당 채팅에 대한 권한이 없습니다.";
+        throw error;
+      }
 
-          // seller 정보
-          const seller_info =
-            await this.productsRepository.findSellerInfoByProductId(product_id);
-
-          newChat = {
-            chat_id: createdChat.chat_id,
-            product_id,
-            buyer_id: createdChat.buyer_id,
-            buyer_nickname,
-            seller_id: seller_info.User.dataValues.user_id,
-            seller_nickname: seller_info.User.dataValues.nickname,
-            title: seller_info.dataValues.title,
-            address: seller_info.Users_info.dataValues.address,
-          };
-        }
+      const savedChat = await this.chatRepository.saveChatContents(
+        chat_id,
+        text,
+        sender_id
       );
-      return newChat;
+      return savedChat;
     } catch (error) {
       throw error;
     }
   };
 
   // GET: 1:1 채팅 내역 조회
-  getMyOneChat = async (chat_id, buyer_id, buyer_nickname) => {
+  getMyOneChat = async (chat_id, user_id, user_nickname) => {
     try {
-      let oneChat;
-      await sequelize.transaction(
-        {
-          isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
-        },
-        async (t) => {
-          const chatRecords = await this.chatRepository.getMyOneChat(chat_id);
-          if (!chatRecords) {
-            const error = new Error();
-            error.errorCode = 404;
-            error.message = "해당 채팅이 존재하지 않습니다.";
-            throw error;
-          }
+      // 채팅 조회
+      const chatInfo = await this.chatRepository.getOneChatInfo(chat_id);
+      if (!chatInfo) {
+        const error = new Error();
+        error.errorCode = 404;
+        error.message = "해당 채팅이 존재하지 않습니다.";
+        throw error;
+      }
 
-          if (chatRecords.buyer_id !== buyer_id) {
-            const error = new Error();
-            error.errorCode = 403;
-            error.message = "해당 채팅에 대한 권한이 없습니다.";
-            throw error;
-          }
+      if (
+        chatInfo.members[0] !== user_id &&
+        chatInfo.members[1] !== user_id
+      ) {
+        const error = new Error();
+        error.errorCode = 403;
+        error.message = "해당 채팅에 대한 권한이 없습니다.";
+        throw error;
+      }
 
-          const { updatedAt, content, title, product_id, is_sold } =
-            chatRecords.dataValues;
-          const passedTime = getPassedTime(updatedAt);
-
-          // seller 정보
-          const seller_info =
-            await this.productsRepository.findSellerInfoByProductId(product_id);
-
-          // 채팅 내역 객체화
-          const chatContents = await Promise.all(
-            JSON.parse(content).map((c) => {
-              return JSON.parse(c);
-            })
-          );
-
-          oneChat = {
-            chat_id,
-            product_id,
-            title,
-            seller_nickname: seller_info.User.dataValues.nickname,
-            buyer_nickname,
-            updatedAt: passedTime,
-            is_sold,
-            chatContents,
-          };
-        }
-      );
-      return oneChat;
+      // 해당 채팅의 메세지 내역 전체 조회
+      const messageLists = await this.chatRepository.getAllMessages(chat_id);
+      return {
+        chat_id,
+        product_id: chatInfo.product_id,
+        address: chatInfo.address,
+        my_id: user_id,
+        my_nickname: user_nickname,
+        another_id: chatInfo.members[0] === user_id ? chatInfo.members[1] : chatInfo.members[0],
+        another_nickname: chatInfo.members[0] === user_id ? chatInfo.members_nickname[1] : chatInfo.members_nickname[0],
+        is_sold: chatInfo.is_sold,
+        messages: messageLists,
+      };
     } catch (error) {
       throw error;
     }
   };
-
-  // PATCH: 1:1 채팅 내역 저장
-  saveChatContents = async (chat_id, contents, buyer_id) => {
-    try {
-      await sequelize.transaction(
-        {
-          isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
-        },
-        async (t) => {
-          const buyerId = await this.chatRepository.checkBuyerIdByChatId(
-            chat_id
-          );
-          if (buyerId.dataValues.buyer_id !== buyer_id) {
-            const error = new Error();
-            error.errorCode = 403;
-            error.message = "해당 채팅에 대한 권한이 없습니다.";
-            throw error;
-          }
-
-          for (const content of contents) {
-            await this.chatRepository.saveChatContents(chat_id, content);
-          }
-        }
-      );
-    } catch (error) {
-      throw error;
-    }
-  };
-}
-
-function getPassedTime(updatedAt) {
-  const diff = new Date().getTime() - updatedAt.getTime();
-  const diffMinutes = Math.floor(diff / 1000 / 60);
-  const diffHours = Math.floor(diff / 1000 / 60 / 60);
-  const diffDays = Math.floor(diff / 1000 / 60 / 60 / 24);
-
-  let result;
-
-  if (diffMinutes < 10) {
-    result = "방금 전";
-  } else if (diffHours < 1) {
-    result = `${diffMinutes}분 전`;
-  } else if (diffDays < 1) {
-    result = `${diffHours}시간 전`;
-  } else {
-    result = `${diffDays}일 전`;
-  }
-  return result;
 }
 
 module.exports = ChatService;

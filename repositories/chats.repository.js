@@ -1,106 +1,83 @@
-const { Op } = require("sequelize");
-const { Sequelize } = require("sequelize");
-const { Users, Products } = require("../models");
+const Chats = require("../schema/chats.js");
+const Messages = require("../schema/messages.js");
 
 class ChatRepository {
-  constructor(ChatsModel) {
-    this.chatsModel = ChatsModel;
-  }
-
-  getMyAllChats = async (buyer_id) => {
+  createNewChat = async (
+    product_id,
+    buyer_id,
+    seller_id,
+    buyer_nickname,
+    seller_nickname,
+    title,
+    address
+  ) => {
     try {
-      const chatLists = await this.chatsModel.findAll({
-        include: [
-          {
-            model: Products,
-            attributes: ["user_id", "product_id", "title", "is_sold"],
-            required: true,
-          },
-        ],
-        attributes: ["updatedAt", "content", "chat_id"],
-        group: ["Chats.chat_id"],
-        order: [["updatedAt", "DESC"]],
-        where: { buyer_id },
-      });
-      return chatLists;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  createNewChat = async (product_id, buyer_id) => {
-    try {
-      const newChat = await this.chatsModel.create({
+      const newChat = new Chats({
         product_id,
-        buyer_id,
-        content: JSON.stringify([]), // 일단 빈 배열을 넣어줌
+        members: [buyer_id, seller_id],
+        members_nickname: [buyer_nickname, seller_nickname],
+        is_sold: false,
+        title,
+        address,
       });
-      console.log("create 테스트", newChat);
-      return newChat;
+      return await newChat.save();
     } catch (error) {
       throw error;
     }
   };
 
-  getMyOneChat = async (chat_id) => {
+  getMyAllChats = async (user_id) => {
     try {
-      const chatContents = await this.chatsModel.findOne({
-        include: [
-          {
-            model: Products,
-            attributes: [],
-            required: true,
-          },
-        ],
-        attributes: [
-          "updatedAt",
-          "content",
-          "buyer_id",
-          [Sequelize.literal("`Product`.`product_id`"), "product_id"],
-          [Sequelize.literal("`Product`.`title`"), "title"],
-          [Sequelize.literal("`Product`.`is_sold`"), "is_sold"],
-        ],
-        where: { chat_id },
-      });
-
-      return chatContents;
+      const chats = await Chats.find({ members: { $in: [user_id] } })
+        .sort({ updatedAt: "desc" })
+        .exec();
+      return chats;
     } catch (error) {
       throw error;
     }
   };
 
-  saveChatContents = async (chat_id, chatRecord) => {
+  getLatestMessage = async (chat_id) => {
     try {
-      await this.chatsModel.update(
-        {
-          content: Sequelize.literal(
-            `JSON_ARRAY_APPEND(content, "$", '${JSON.stringify(chatRecord)}')`
-          ),
-        },
-        { where: { chat_id } }
-      );
+      return await Messages.findOne({ chat_id })
+        .sort({ createdAt: "desc" })
+        .limit(1)
+        .exec();
     } catch (error) {
       throw error;
     }
   };
 
-  checkBuyerIdByChatId = async (chat_id) => {
+  saveChatContents = async (chat_id, text, sender_id) => {
     try {
-      return await this.chatsModel.findOne({
-        attributes: ["buyer_id"],
-        where: { chat_id },
-      });
+      const newMessage = new Messages({ chat_id, text, sender_id });
+      return await newMessage.save();
     } catch (error) {
       throw error;
     }
   };
 
-  checkChatExists = async (product_id, buyer_id) => {
+  getAllMessages = async (chat_id) => {
     try {
-      return await this.chatsModel.findOne({
-        attributes: ["chat_id"],
-        where: { [Op.and]: [{ product_id }, { buyer_id }] },
-      });
+      return await Messages.find({ chat_id })
+        .sort({ createdAt: "desc" })
+        .exec();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  getOneChatInfo = async (chat_id) => {
+    try {
+      return await Chats.findOne({ _id: chat_id }).exec();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  checkChatExistsByProductId = async (product_id) => {
+    try {
+      return await Chats.findOne({ product_id }).exec();
     } catch (error) {
       throw error;
     }

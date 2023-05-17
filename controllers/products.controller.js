@@ -1,5 +1,5 @@
 const ProductsService = require("../services/products.service");
-const { productSchema } = require("./joi");
+const { productSchema } = require("../middlewares/joi");
 const es = require("@elastic/elasticsearch");
 
 class ProductsController {
@@ -14,15 +14,16 @@ class ProductsController {
         error.errorCode = 412;
         next(error, req, res, error.message);
       }
-      await this.productsService.createProduct(
-        user_id,
-        id,
-        value.title,
-        value.content,
-        value.price,
-        value.category,
-        value.photo_ip
-      );
+
+        await this.productsService.createProduct(
+          user_id,
+          id,
+          value.title,
+          value.content,
+          value.price,
+          value.category,
+          value.photo_ip
+        );
 
       return res.status(201).json({ message: "상품 생성 완료" });
     } catch (error) {
@@ -126,40 +127,102 @@ class ProductsController {
   };
 
   // 중고거래 상품 검색 (ELK)
-  // elkSearchProduct = async (req, res, next) => {
-  //   try {
-  //     const keyword = req.query.keyword;
+  elkSearchProduct = async (req, res, next) => {
+    try {
+      const keyword = req.query.keyword;
+    
+      // Elasticsearch에 대한 연결을 만듭니다.
+      const client = new es.Client({
+        host: 'http://localhost:9200',
+        nodes: ['http://localhost:9200'],
+      });
+
+      // 검색을 실행하고 결과를 가져옵니다.
+      const datas = await client.search({
+        index: 'products',
+        size: 100,
+        query: {
+          bool:{
+            should: [
+              {
+                query_string: {
+                  default_field: 'title',
+                  query: '*' + keyword + '*'
+                }
+              },
+              {
+                query_string: {
+                  default_field: 'content',
+                  query: '*' + keyword + '*'
+                }
+              },
+            ]
+          }
+        },
+        sort: [
+          {
+            createdat: {
+              order: 'asc'
+            }
+          }
+        ]
+      });
       
-  //     // Elasticsearch에 대한 연결을 만듭니다.
-  //     const client = new es.Client({
-  //       host: 'localhost:9200',
-  //     });
+      let result = [];
 
-  //     // 검색을 만듭니다.
-  //     const search = new es.Search({
-  //       index: 'products',
-  //       type: 'my_type',
-  //       body: {
-  //         query: {
-  //           match: {
-  //             name: 'John Doe',
-  //           },
-  //         },
-  //       },
-  //     });
+      // 결과를 처리합니다.
+      for (const data of datas.hits.hits) {
+        result.push(data._source);
+      }
+      
+      res.status(200).json(result)
 
-  //     // 검색을 실행하고 결과를 가져옵니다.
-  //     const results = await client.search(search);
+    } catch (error) {
+      next(error, req, res, '상품 검색에 실패하였습니다.');
+    }
+  };
 
-  //     // 결과를 처리합니다.
-  //     for (const result of results.hits.hits) {
-  //       console.log(result._source.name);
-  //     }
+  // 중고거래 상품 전체 조회 (ELK)
+  elkAllProduct = async (req, res, next) => {
+    try {
+      const keyword = req.query.keyword;
+    
+      // Elasticsearch에 대한 연결을 만듭니다.
+      const client = new es.Client({
+        host: 'http://localhost:9200',
+        nodes: ['http://localhost:9200'],
+      });
 
-  //   } catch (error) {
-  //     next(error, req, res, '상품 검색에 실패하였습니다.');
-  //   }
-  // };
+      // 모든 상품 게시물을 가져옵니다.
+      const datas = await client.search({
+        index: 'products',
+        size: 10000,
+        query: {
+          match_all: {},
+        },
+        sort: [
+          {
+            createdat: {
+              order: 'asc'
+            }
+          }
+        ]
+      });
+
+      let result = [];
+
+      // 결과를 처리합니다.
+      for (const data of datas.hits.hits) {
+        result.push(data._source);
+      }
+      
+      res.status(200).json(result)
+
+    } catch (error) {
+      next(error, req, res, '상품 검색에 실패하였습니다.');
+    }
+  };
+
 }
 
 module.exports = ProductsController;

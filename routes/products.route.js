@@ -25,7 +25,7 @@ router.patch("/:product_id", authMiddleware, uploadImage.single("photo"), produc
 router.delete("/:product_id", authMiddleware, productsController.deleteProduct);
 
 // 중고거래 상품 거래 완료
-router.patch('/:product_id/sold', productsController.makeProductSold);
+router.patch('/:product_id/sold', authMiddleware, productsController.makeProductSold);
 
 // 중고거래 상품 관심 설정
 router.put("/:product_id/likes", authMiddleware, likeController.putLikes);
@@ -34,7 +34,9 @@ router.put("/:product_id/likes", authMiddleware, likeController.putLikes);
 router.get('/search', productsController.searchProduct);
 
 // 중고거래 상품 검색 (ELK)
-// router.get('/search/elk', productsController.elkSearchProduct)
+router.get('/search/elk', productsController.elkSearchProduct)
 
+// 중고거래 상품 전체 조회 (ELK)
+router.get('/search/elkall', productsController.elkAllProduct)
 
 module.exports = router;
