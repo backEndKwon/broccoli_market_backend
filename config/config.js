@@ -32,5 +32,9 @@ const s3 = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 }
+const corsOption = {
+  allowedOrigin: process.env.FE_URL,
+}
+  
 
-module.exports = { development, test, jwt, bcrypt, host, s3 };
+module.exports = { development, test, jwt, bcrypt, host, s3, corsOption };

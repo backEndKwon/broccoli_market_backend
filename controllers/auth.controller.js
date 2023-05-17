@@ -5,6 +5,7 @@ const ejs = require('ejs');
 const Axios = require('axios');
 const appDir = path.dirname(require.main.filename);
 const redisClient = require('../utils/redis.js')
+require("dotenv").config();
 
 class AuthController {
     authService = new AuthService();

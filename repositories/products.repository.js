@@ -39,8 +39,9 @@ class ProductsRepository {
     });
   };
 
-  findDetailProduct = async (product_id) => {
+  findDetailProduct = async (product_id, t) => {
     return await this.model.findOne({
+      transaction: t,
       where: { product_id },
       include: [
         {
@@ -55,8 +56,9 @@ class ProductsRepository {
     });
   };
 
-  findRelatedProduct = async (category, product_id) => {
+  findRelatedProduct = async (category, product_id, t) => {
     return await this.model.findAll({
+      transaction: t,
       where: {
         category,
         is_sold: false,
@@ -81,8 +83,8 @@ class ProductsRepository {
     });
   };
 
-  hitsProduct = async (product_id) => {
-    await this.model.increment({ views: +1 }, { where: { product_id } });
+  hitsProduct = async (product_id, t) => {
+    await this.model.increment({ views: +1 }, { transaction: t, where: { product_id } });
   };
 
   updateProduct = async (
@@ -91,22 +93,23 @@ class ProductsRepository {
     content,
     price,
     category,
-    photo_ip
+    photo_ip,
+    t
   ) => {
     return await this.model.update(
       { title, content, price, category, photo_ip },
-      { where: { product_id } }
+      { transaction: t, where: { product_id } }
     );
   };
 
-  deleteProduct = async (product_id) => {
-    return await this.model.destroy({ where: { product_id } });
+  deleteProduct = async (product_id, t) => {
+    return await this.model.destroy({ transaction: t, where: { product_id } });
   };
 
-  makeProductSold = async (product_id) => {
+  makeProductSold = async (product_id, t) => {
     return await this.model.update(
       { is_sold: true },
-      { where: { product_id } }
+      { transaction: t, where: { product_id } }
     );
   };
 
