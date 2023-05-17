@@ -138,7 +138,7 @@ class ProductsController {
       });
 
       // 검색을 실행하고 결과를 가져옵니다.
-      const results = await client.search({
+      const datas = await client.search({
         index: 'products',
         size: 100,
         query: {
@@ -168,14 +168,14 @@ class ProductsController {
         ]
       });
       
-      let data = [];
+      let result = [];
 
-      //결과를 처리합니다.
-      for (const result of results.hits.hits) {
-        data.push(result._source);
+      // 결과를 처리합니다.
+      for (const data of datas.hits.hits) {
+        result.push(data._source);
       }
       
-      res.status(200).json(data)
+      res.status(200).json(result)
 
     } catch (error) {
       next(error, req, res, '상품 검색에 실패하였습니다.');
@@ -194,7 +194,7 @@ class ProductsController {
       });
 
       // 모든 상품 게시물을 가져옵니다.
-      const results = await client.search({
+      const datas = await client.search({
         index: 'products',
         size: 10000,
         query: {
@@ -209,14 +209,14 @@ class ProductsController {
         ]
       });
 
-      let data = [];
+      let result = [];
 
-      //결과를 처리합니다.
-      for (const result of results.hits.hits) {
-        data.push(result._source);
+      // 결과를 처리합니다.
+      for (const data of datas.hits.hits) {
+        result.push(data._source);
       }
       
-      res.status(200).json(data)
+      res.status(200).json(result)
 
     } catch (error) {
       next(error, req, res, '상품 검색에 실패하였습니다.');
