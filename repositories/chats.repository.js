@@ -3,6 +3,7 @@ const Messages = require("../schema/messages.js");
 
 class ChatRepository {
   createNewChat = async (
+    socket_id,
     product_id,
     buyer_id,
     seller_id,
@@ -13,6 +14,7 @@ class ChatRepository {
   ) => {
     try {
       const newChat = new Chats({
+        socket_id,
         product_id,
         members: [buyer_id, seller_id],
         members_nickname: [buyer_nickname, seller_nickname],
@@ -82,6 +84,14 @@ class ChatRepository {
       throw error;
     }
   };
+
+  updateSocketId = async (chat_id, socket_id) => {
+    try {
+      return await Chats.updateOne({ _id: chat_id }, { socket_id }).exec();
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = ChatRepository;

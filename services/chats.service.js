@@ -8,7 +8,7 @@ class ChatService {
   productsRepository = new ProductsRepository(Products, Users, Users_info);
 
   // POST: 새로운 1:1 채팅 생성
-  createNewChat = async (product_id, buyer_id, buyer_nickname) => {
+  createNewChat = async (socket_id, product_id, buyer_id, buyer_nickname) => {
     try {
       // 이미 채팅이 존재하는 경우
       const existChat = await this.chatRepository.checkChatExistsByProductId(
@@ -36,6 +36,7 @@ class ChatService {
       }
 
       const createdChat = await this.chatRepository.createNewChat(
+        socket_id,
         product_id,
         buyer_id,
         seller_info.User.dataValues.user_id, // seller_id
@@ -47,6 +48,7 @@ class ChatService {
 
       return {
         chat_id: createdChat._id,
+        socket_id,
         product_id,
         buyer_id,
         buyer_nickname,
@@ -139,6 +141,8 @@ class ChatService {
 
       return {
         chat_id,
+        socket_id: chatInfo.socket_id,
+        title: chatInfo.title,
         product_id: chatInfo.product_id,
         address: chatInfo.address,
         my_id: user_id,

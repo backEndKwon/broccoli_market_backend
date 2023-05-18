@@ -6,9 +6,11 @@ class ChatController {
   // POST: 새로운 1:1 채팅 생성 
   createNewChat = async (req, res, next) => {
     const { product_id } = req.params;
+    const { socket_id } = req.body;
     const { user_id, nickname } = res.locals.user;
     try {
       const newChat = await this.chatService.createNewChat(
+        socket_id,
         parseInt(product_id),
         user_id,
         nickname
