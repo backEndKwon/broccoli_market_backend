@@ -85,6 +85,14 @@ class ChatRepository {
     }
   };
 
+  getCurrentSocketId = async (socket_id) => {
+    try {
+      return await Chats.findOne({ socket_id }).exec();
+    } catch (error) {
+      throw error;
+    }
+  }
+
   updateSocketId = async (chat_id, socket_id) => {
     try {
       return await Chats.updateOne({ _id: chat_id }, { socket_id }).exec();
