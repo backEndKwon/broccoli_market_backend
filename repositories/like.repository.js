@@ -7,8 +7,9 @@ class LikeRepository {
     return existProduct;
   };
   /* like_id 존재확인용 */
-  existLikeId = async (user_id, product_id) => {
+  existLikeId = async (user_id, product_id, t) => {
     const existLikeId = await Likes.findOne({
+      transaction: t,
       where: { user_id, product_id },
     });
     return existLikeId;
