@@ -7,6 +7,10 @@ const MessagesSchema = new mongoose.Schema(
       required: true,
     },
     sender_id: {
+      type: Number,
+      required: true,
+    },
+    sender_nickname: {
       type: String,
       required: true,
     },

@@ -56,12 +56,22 @@ class ChatService {
     try {
       const chatLists = await this.chatRepository.getMyAllChats(user_id);
       const allMyChats = await Promise.all(
-        chatLists.map(async (chat) => ({
-          chat_id: chat._id,
-          updatedAt: chat.updatedAt,
-          is_sold: chat.is_sold,
-          latestMessage: await this.chatRepository.getLatestMessage(chat._id),
-        }))
+        chatLists.map(async (chat) => {
+          const latestMessage = await this.chatRepository.getLatestMessage(
+            chat._id
+          );
+          console.log(latestMessage);
+          return {
+            chat_id: chat._id,
+            updatedAt: chat.updatedAt,
+            is_sold: chat.is_sold,
+            latestMessage: {
+              sender_id: latestMessage.sender_id,
+              sender_nickname: latestMessage.sender_nickname,
+              text: latestMessage.text,
+            },
+          };
+        })
       );
       return allMyChats;
     } catch (error) {
@@ -70,7 +80,7 @@ class ChatService {
   };
 
   // POST: 1:1 채팅 메세지 저장
-  saveChatContents = async (chat_id, text, sender_id) => {
+  saveChatContents = async (chat_id, text, sender_id, sender_nickname) => {
     try {
       const chatInfo = await this.chatRepository.getOneChatInfo(chat_id);
 
@@ -87,7 +97,8 @@ class ChatService {
       const savedChat = await this.chatRepository.saveChatContents(
         chat_id,
         text,
-        sender_id
+        sender_id,
+        sender_nickname
       );
       return savedChat;
     } catch (error) {
@@ -107,10 +118,7 @@ class ChatService {
         throw error;
       }
 
-      if (
-        chatInfo.members[0] !== user_id &&
-        chatInfo.members[1] !== user_id
-      ) {
+      if (chatInfo.members[0] !== user_id && chatInfo.members[1] !== user_id) {
         const error = new Error();
         error.errorCode = 403;
         error.message = "해당 채팅에 대한 권한이 없습니다.";
@@ -119,16 +127,31 @@ class ChatService {
 
       // 해당 채팅의 메세지 내역 전체 조회
       const messageLists = await this.chatRepository.getAllMessages(chat_id);
+      const allMessages = await Promise.all(
+        messageLists.map(async (message) => ({
+          sender_id: parseInt(message.sender_id),
+          sender_nickname: message.sender_nickname,
+          text: message.text,
+          createdAt: message.createdAt,
+        }))
+      );
+
       return {
         chat_id,
         product_id: chatInfo.product_id,
         address: chatInfo.address,
         my_id: user_id,
         my_nickname: user_nickname,
-        another_id: chatInfo.members[0] === user_id ? chatInfo.members[1] : chatInfo.members[0],
-        another_nickname: chatInfo.members[0] === user_id ? chatInfo.members_nickname[1] : chatInfo.members_nickname[0],
+        another_id:
+          chatInfo.members[0] === user_id
+            ? chatInfo.members[1]
+            : chatInfo.members[0],
+        another_nickname:
+          chatInfo.members[0] === user_id
+            ? chatInfo.members_nickname[1]
+            : chatInfo.members_nickname[0],
         is_sold: chatInfo.is_sold,
-        messages: messageLists,
+        messages: allMessages,
       };
     } catch (error) {
       throw error;

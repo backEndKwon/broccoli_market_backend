@@ -35,8 +35,8 @@ class ChatController {
     try {
       const { chat_id } = req.params;
       const { text } = req.body;
-      const { user_id } = res.locals.user;
-      await this.chatService.saveChatContents(chat_id, text, user_id);
+      const { user_id, nickname } = res.locals.user;
+      await this.chatService.saveChatContents(chat_id, text, user_id, nickname);
       res
         .status(201)
         .json({ message: "채팅 내역 저장이 정상적으로 완료되었습니다." });

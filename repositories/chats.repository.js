@@ -48,9 +48,9 @@ class ChatRepository {
     }
   };
 
-  saveChatContents = async (chat_id, text, sender_id) => {
+  saveChatContents = async (chat_id, text, sender_id, sender_nickname) => {
     try {
-      const newMessage = new Messages({ chat_id, text, sender_id });
+      const newMessage = new Messages({ chat_id, text, sender_id, sender_nickname });
       return await newMessage.save();
     } catch (error) {
       throw error;
