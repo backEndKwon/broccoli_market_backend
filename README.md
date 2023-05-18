@@ -59,7 +59,7 @@
     <td align="center"><img src="https://github.com/backEndKwon/Lv5_3layer_Architecture/assets/128948886/22e9b42c-7000-46b4-90fe-6fb1f302d1e9" width="60px;" alt=""/>
     </td>
     <td align="center">
-    <b>김은비</b></a><br /> 
+    <b>강은빈</b></a><br /> 
     <a href="https://github.com/mookbin">Github</a>
         <br><img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=white"/><br>
     </td>
