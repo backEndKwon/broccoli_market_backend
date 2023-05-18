@@ -23,7 +23,7 @@ class AuthController {
                   grant_type: 'authorization_code',
                   client_id: process.env.KAKAO_SECRET_KEY,
                   code: code,
-                  redirect_uri: "http://api.broccoli-market.store/api/auth/sociallogin" // 로컬 테스트 시 로컬 서버 URI
+                  redirect_uri: "http://api.broccoli-market.store/api/auth/kakaoLogin" // 로컬 테스트 시 'http:://백엔드 포트/api/auth/kakaoLogin
               }
           });
           
@@ -37,6 +37,7 @@ class AuthController {
   
           const data = res2.data;
           const user = await this.authService.findOneUsers_info(data.kakao_account.email)
+
           console.log(res2.data)
           if (!user) {
               res.redirect('http://broccoli-market.store/signup'); // 로컬 테스트 시 'http:://프론트 포트/signup'
@@ -55,7 +56,9 @@ class AuthController {
               `${userData.refreshObject.type} ${userData.refreshObject.token}`
                );
             
-            res.status(200).redirect('http://broccoli-market.store:3000') // 로컬 테스트 시 'http:://프론트 포트'
+
+            res.status(200).redirect('http://broccoli-market.store') // 로컬 테스트 시 'http:://프론트 포트'
+
           }
       } catch (error) {
           console.error(error);
@@ -70,7 +73,7 @@ class AuthController {
       
       try {
         const emailTemplate = await ejs.renderFile(appDir + '/template/authMail.ejs', { authCode: authNum });
-        const redisSetResult = await redisClient.SETEX(email, 180, authNum )
+        const redisSetResult = await redisClient.SETEX(email, 300, authNum )
         const existsEmail = await this.authService.findOneUsers_info(email);
 
         const transporter = nodemailer.createTransport({
@@ -89,13 +92,20 @@ class AuthController {
           });
           return;
         }
-  
+
         const emailForm = {
           from: process.env.NODEMAILER_USER,
           to: email,
           subject: "전송받은 인증번호를 입력해주세요.",
           html: emailTemplate,
         };
+
+        if (existsEmail) {
+          res.status(412).json({
+            errorMessage: "중복된 이메일입니다.",
+          });
+          return;
+        }
   
         if (!emailFilter) {
           res.status(412).json({
