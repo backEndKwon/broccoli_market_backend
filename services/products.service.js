@@ -1,9 +1,11 @@
 const ProductsRepository = require('./../repositories/products.repository');
-const { Products, Users, Users_info, sequelize } = require('../models/');
+const LikessRepository = require('./../repositories/like.repository');
+const { Products, Users, Users_info, Likes, sequelize } = require('../models/');
 const { Transaction } = require("sequelize");
 
 class ProductsService {
   productsRepository = new ProductsRepository(Products, Users, Users_info);
+  likesRepository = new LikessRepository(Likes);
 
   createProduct = async (
     user_id,
@@ -51,7 +53,7 @@ class ProductsService {
     });
   };
 
-  findDetailProduct = async (product_id) => {
+  findDetailProduct = async (token, product_id) => {
     try {
       const t = await sequelize.transaction({
         isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
@@ -65,6 +67,21 @@ class ProductsService {
         throw error;
       }
 
+      let check = false;
+      if (token) {
+        const nickname = token.nickname;
+        const user = await Users.findOne({
+          where: { nickname },
+          attributes: ['user_id']
+        });
+        const user_id = user.user_id;
+        const like = await this.likesRepository.existLikeId(user_id, product_id, t);
+        
+        if (like) {
+          check = true;
+        }
+      }
+      
       const category = product.category;
       const relatedProduct = await this.productsRepository.findRelatedProduct(
         category,
@@ -85,6 +102,7 @@ class ProductsService {
         price: product.price,
         category: product.category,
         chat_count: product.chat_count,
+        existLike: check,
         likes: product.likes,
         views: product.views + 1,
         createdAt: product.createdAt,
