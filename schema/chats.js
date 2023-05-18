@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 
 const ChatsSchema = new mongoose.Schema(
   {
+    socket_id: {
+      type: String,
+    },
     members: {
       type: Array,
       required: true,
