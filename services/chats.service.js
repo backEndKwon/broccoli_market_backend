@@ -57,19 +57,11 @@ class ChatService {
       const chatLists = await this.chatRepository.getMyAllChats(user_id);
       const allMyChats = await Promise.all(
         chatLists.map(async (chat) => {
-          const latestMessage = await this.chatRepository.getLatestMessage(
-            chat._id
-          );
-          console.log(latestMessage);
           return {
             chat_id: chat._id,
             updatedAt: chat.updatedAt,
             is_sold: chat.is_sold,
-            latestMessage: {
-              sender_id: latestMessage.sender_id,
-              sender_nickname: latestMessage.sender_nickname,
-              text: latestMessage.text,
-            },
+            latestMessage: await this.chatRepository.getLatestMessage(chat._id),
           };
         })
       );
