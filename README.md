@@ -1,8 +1,9 @@
 # 🥦 Broccoli_Market_backend #
 
-<a href="https://www.antsori.com"><img src="홈화면이미지링크" style="width:500px;"></a>
+<!-- <a href="https://www.antsori.com"><img src="홈화면이미지링크" style="width:500px;"></a> -->
+![index](https://user-images.githubusercontent.com/76824986/239220497-9f6d4862-a75a-4c8d-93aa-7d3023120ac6.png)
 
-## 🏠 [Home Page Link](링크)
+## 🏠 [Home Page Link](http://broccoli-market.store/)
 ## 소개 영상 [youtube](https://youtu.be/ltBcH5zUo5g)
 ## 세부 작업 현황 [Notion](https://www.notion.so/f7ce4867fd954ec0bb84a1d7d0befa54)
 <hr>
