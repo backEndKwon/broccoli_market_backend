@@ -23,12 +23,13 @@ module.exports = async (req, res, next) => {
         errormessage: "토큰에 해당하는 사용자가 존재하지 않습니다.",
       });
     }
+
     res.locals.user = user;
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {
       const refreshToken = req.cookies.refreshToken;
-      const token = refreshToken.split(' ')[1];          
+      const token = refreshToken.split(" ")[1];
       const decodedRefreshToken = jwt.verify(
         token,
         process.env.REFRESH_SECRET_KEY
@@ -50,8 +51,8 @@ module.exports = async (req, res, next) => {
           expiresIn: process.env.ACCESS_EXPIRES,
         }
       );
-      
-      res.cookie("authorization", `Bearer ${newAccessToken}`)
+
+      res.cookie("authorization", `Bearer ${newAccessToken}`);
       res.locals.user = user;
       return next();
     } else {

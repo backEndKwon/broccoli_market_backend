@@ -10,7 +10,7 @@ const authController = new AuthController();
 router.post('/authEmail', authController.authEmail);
 
 // POST: 소셜 로그인
-// router.get('/sociallogin', authController.kakaoLogin)
+router.get('/kakaoLogin', authController.kakaoLogin)
 
 // POST: 회원가입
 router.post('/signup', authController.signup);

@@ -10,45 +10,61 @@ require("dotenv").config();
 class AuthController {
     authService = new AuthService();
 
-    // kakaoLogin = async (req, res) => {
-    //   const code = req.query.code;
-      
-    //   try { 
-    //       // Access token 가져오기
-    //       const res1 = await Axios.post('https://kauth.kakao.com/oauth/token', {}, {
-    //           headers: {
-    //               "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
-    //           },
-    //           params:{
-    //               grant_type: 'authorization_code',
-    //               client_id: process.env.KAKAO_SECRET_KEY,
-    //               code: code,
-    //               redirect_uri: "http://localhost:3000/api/auth/sociallogin"
-    //           }
-    //       });
+    kakaoLogin = async (req, res) => {
+      const code = req.query.code;
+      console.log(code)
+      try { 
+          // Access token 가져오기
+          const res1 = await Axios.post('https://kauth.kakao.com/oauth/token', {}, {
+              headers: {
+                  "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
+              },
+              params:{
+                  grant_type: 'authorization_code',
+                  client_id: process.env.KAKAO_SECRET_KEY,
+                  code: code,
+                  redirect_uri: "http://api.broccoli-market.store/api/auth/kakaoLogin" // 로컬 테스트 시 'http:://백엔드 포트/api/auth/kakaoLogin
+              }
+          });
           
-    //       // Access token을 이용해 정보 가져오기
-    //       const res2 = await Axios.post('https://kapi.kakao.com/v2/user/me', {}, {
-    //           headers: {
-    //               "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-    //               'Authorization': 'Bearer ' + res1.data.access_token
-    //           }
-    //       });
+          // Access token을 이용해 정보 가져오기
+          const res2 = await Axios.post('https://kapi.kakao.com/v2/user/me', {}, {
+              headers: {
+                  "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+                  'Authorization': 'Bearer ' + res1.data.access_token
+              }
+          });
   
-    //       const data = res2.data;
-    //       const user = await this.authService.socialFindOneUser(data.kakao_account.email)
-          
-    //       if (!user) {
-    //           res.redirect('http://localhost:3001/signup');
-    //           return;
-    //       } else {
-    //         res.redirect('http://localhost:3001')
-    //       }
-    //   } catch (error) {
-    //       console.error(error);
-    //       res.status(400).end('로그인에 실패했습니다.');
-    //   }
-    // };
+          const data = res2.data;
+          const user = await this.authService.findOneUsers_info(data.kakao_account.email)
+
+          console.log(res2.data)
+          if (!user) {
+              res.redirect('http://broccoli-market.store/signup'); // 로컬 테스트 시 'http:://프론트 포트/signup'
+              return;
+          } else {
+            
+            const userData = await this.authService.kakaoLogin(data.kakao_account.email);
+
+            res.cookie(
+              "authorization",
+              `${userData.accessObject.type} ${userData.accessObject.token}`
+            );
+      
+            res.cookie(
+              "refreshToken",
+              `${userData.refreshObject.type} ${userData.refreshObject.token}`
+               );
+            
+
+            res.status(200).redirect('http://broccoli-market.store') // 로컬 테스트 시 'http:://프론트 포트'
+
+          }
+      } catch (error) {
+          console.error(error);
+          res.status(400).json({errorMessage : '로그인에 실패했습니다.'});
+      }
+    };    
     
     authEmail = async (req, res) => {
       const { email } = req.body;
@@ -57,8 +73,9 @@ class AuthController {
       
       try {
         const emailTemplate = await ejs.renderFile(appDir + '/template/authMail.ejs', { authCode: authNum });
-        const redisSetResult = await redisClient.SETEX(email, 180, authNum )
-          
+        const redisSetResult = await redisClient.SETEX(email, 300, authNum )
+        const existsEmail = await this.authService.findOneUsers_info(email);
+
         const transporter = nodemailer.createTransport({
           service: "naver",
           port: 587,
@@ -68,13 +85,27 @@ class AuthController {
             pass: process.env.NODEMAILER_PASS,
           },
         });
-  
+        
+        if (existsEmail) {
+          res.status(412).json({
+            errorMessage: "중복된 이메일입니다.",
+          });
+          return;
+        }
+
         const emailForm = {
           from: process.env.NODEMAILER_USER,
           to: email,
           subject: "전송받은 인증번호를 입력해주세요.",
           html: emailTemplate,
         };
+
+        if (existsEmail) {
+          res.status(412).json({
+            errorMessage: "중복된 이메일입니다.",
+          });
+          return;
+        }
   
         if (!emailFilter) {
           res.status(412).json({
@@ -102,7 +133,6 @@ class AuthController {
         try {
           const existsId = await this.authService.findOneUser(id);
           const existsUsers = await this.authService.findOneUser(nickname);
-          const existsEmail = await this.authService.findOneUser(email);
           const idFilter = /^[A-Za-z0-9]{3,}$/.test(id);
           const nicknameFilter = /^[A-Za-z0-9]{3,}$/.test(nickname);
           const emailFilter = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+$/.test(email);
@@ -123,13 +153,6 @@ class AuthController {
           if (existsId) {
             res.status(412).json({
               errorMessage: "중복된 아이디입니다.",
-            });
-            return;
-          }
-    
-          if (existsEmail) {
-            res.status(412).json({
-              errorMessage: "중복된 이메일입니다.",
             });
             return;
           }
