@@ -28,6 +28,10 @@ app.use(
 // swagger
 app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
+// mongoDB
+const connectToMongoDB = require("./utils/mongodb");
+connectToMongoDB(app);
+
 // router
 const apiMainRouter = require("./routes/index");
 app.use("/api", [apiMainRouter]);
@@ -38,3 +42,5 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`running http://api.broccoli-market.store:${port}`);
 });
+
+module.exports = app;

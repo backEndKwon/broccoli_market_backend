@@ -1,22 +1,27 @@
-const AuthRepository = require('../repositories/auth.repository');
+const AuthRepository = require("../repositories/auth.repository");
 const { Users } = require("../models");
 const redisClient = require("../utils/redis");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-
 
 class AuthService {
   constructor(authRepository) {
     this.redisClient = redisClient;
   }
   authRepository = new AuthRepository(Users);
-  
+
   signup = async (id, nickname, password, email, address) => {
     const usersData = { id, password, nickname };
-    const users_InfoData = { email, address, sold_item: "", likes: "", bought_item: "" };
-  
+    const users_InfoData = {
+      email,
+      address,
+      sold_item: "",
+      likes: "",
+      bought_item: "",
+    };
+
     await this.authRepository.createUser(usersData, users_InfoData);
-    
+
     return { message: "회원 가입 완료" };
   };
 
@@ -38,10 +43,9 @@ class AuthService {
         expiresIn: process.env.REFRESH_EXPIRES,
       }
     );
-    const refreshObject = {type: "Bearer", token: refreshToken}
+    const refreshObject = { type: "Bearer", token: refreshToken };
 
-    return { accessObject, refreshObject }; 
-
+    return { accessObject, refreshObject };
   };
 
   kakaoLogin = async (email) => {
