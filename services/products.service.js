@@ -1,5 +1,5 @@
-const ProductsRepository = require('./../repositories/products.repository');
-const { Products, Users, Users_info, sequelize } = require('../models/');
+const ProductsRepository = require("./../repositories/products.repository");
+const { Products, Users, Users_info, sequelize } = require("../models");
 const { Transaction } = require("sequelize");
 
 class ProductsService {
@@ -57,11 +57,14 @@ class ProductsService {
         isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
       });
 
-      const product = await this.productsRepository.findDetailProduct(product_id, t);
+      const product = await this.productsRepository.findDetailProduct(
+        product_id,
+        t
+      );
       if (!product) {
         const error = new Error();
         error.errorCode = 404;
-        error.message = '상품이 존재하지 않습니다.';
+        error.message = "상품이 존재하지 않습니다.";
         throw error;
       }
 
@@ -113,17 +116,20 @@ class ProductsService {
         isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
       });
 
-      const product = await this.productsRepository.findDetailProduct(product_id, t);
+      const product = await this.productsRepository.findDetailProduct(
+        product_id,
+        t
+      );
       if (!product) {
         const error = new Error();
         error.errorCode = 404;
-        error.message = '상품이 존재하지 않습니다.';
+        error.message = "상품이 존재하지 않습니다.";
         throw error;
       }
       if (product.user_id !== user_id) {
         const error = new Error();
         error.errorCode = 403;
-        error.message = '상품 수정 권한이 존재하지 않습니다.';
+        error.message = "상품 수정 권한이 존재하지 않습니다.";
         throw error;
       }
       await this.productsRepository.updateProduct(
@@ -137,7 +143,8 @@ class ProductsService {
       );
 
       const updateProduct = await this.productsRepository.findDetailProduct(
-        product_id, t
+        product_id,
+        t
       );
 
       await t.commit();
@@ -161,22 +168,25 @@ class ProductsService {
         isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
       });
 
-      const product = await this.productsRepository.findDetailProduct(product_id, t);
+      const product = await this.productsRepository.findDetailProduct(
+        product_id,
+        t
+      );
       if (!product) {
         const error = new Error();
         error.errorCode = 404;
-        error.message = '상품이 존재하지 않습니다.';
+        error.message = "상품이 존재하지 않습니다.";
         throw error;
       }
       if (product.user_id !== user_id) {
         const error = new Error();
         error.errorCode = 403;
-        error.message = '상품 삭제 권한이 없습니다.';
+        error.message = "상품 삭제 권한이 없습니다.";
         throw error;
       }
 
       await this.productsRepository.deleteProduct(product_id, t);
-      
+
       await t.commit();
     } catch (error) {
       throw new Error(error);
@@ -189,7 +199,10 @@ class ProductsService {
         isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
       });
 
-      const product = await this.productsRepository.findDetailProduct(product_id, t);
+      const product = await this.productsRepository.findDetailProduct(
+        product_id,
+        t
+      );
       if (!product) {
         const error = new Error();
         error.errorCode = 404;
@@ -211,7 +224,7 @@ class ProductsService {
   };
 
   searchProduct = async (keyword) => {
-    const keywords = keyword.split(' ');
+    const keywords = keyword.split(" ");
 
     const result = await this.productsRepository.searchProduct(keywords);
 
@@ -249,7 +262,6 @@ class ProductsService {
       };
     });
   };
-
 }
 
 module.exports = ProductsService;
