@@ -9,7 +9,7 @@ class MypageController {
     try {
       const getMySellingProducts =
         await this.mypageService.getMySellingProducts(user_id);
-      return res.status(201).json({ sellPtoduct: getMySellingProducts });
+      return res.status(201).json({ sellProduct: getMySellingProducts });
     } catch (error) {
       next(error, req, res, "판매 상품 목록 조회에 실패하였습니다.");
     }
