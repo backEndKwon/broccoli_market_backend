@@ -36,6 +36,7 @@ class ProductsRepository {
           attributes: ["address"],
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
   };
 
@@ -80,6 +81,7 @@ class ProductsRepository {
           attributes: ["address"],
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
   };
 
@@ -134,7 +136,8 @@ class ProductsRepository {
           model: this.usersInfoModel,
           attibutes: ['address']
         }
-      ]
+      ],
+      order: [["createdAt", "DESC"]],
     };
     const results = await this.model.findAll(query);
     return results;
@@ -148,6 +151,7 @@ class ProductsRepository {
           where: { address: { [Op.substring]: region } }
         },
       ],
+      order: [["createdAt", "DESC"]],
     })
   }
 

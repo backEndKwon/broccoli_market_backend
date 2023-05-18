@@ -30,13 +30,6 @@ class ProductsService {
   findAllProducts = async () => {
     const products = await this.productsRepository.findAllProducts();
 
-    products.sort((a, b) => b.created_at - a.created_at);
-
-    // // 게시글 갯수를 20개로 제한
-    // if (posts.length > 20) {
-    //   posts.length = 20;
-    // }
-
     return products.map((product) => {
       return {
         product_id: product.product_id,
