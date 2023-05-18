@@ -6,7 +6,9 @@ let mockMypageModel = {
   getMySoldProducts: jest.fn(),
   getMyLikeProducts: jest.fn(),
 };
-
+let mockRequest = {
+  body:jest.fn()
+}
 let mockResponse = {
   status: jest.fn(),
   json: jest.fn(),
@@ -32,14 +34,16 @@ describe("Mypage Controller Unit Test", () => {
   /* 1.판매 중인 상품 목록조회 */
   test("Controller Mypage 판매중인 상품조회(정상 진행 부분)", async () => {
     const value = [{}, {}];
-    mockMypageModel.getMySellingProducts = jest.fn(() => {
+    mockMypageModel.sellPtoduct = jest.fn(() => {
       return value;
     });
-    await mypageController.getMySellingProducts(mockResponse);
+    await mypageController.getMySellingProducts(mockRequest,mockResponse);
 
     expect(mockMypageModel.getMySellingProducts).toHaveBeenCalledTimes(1);
     expect(mockResponse.status).toHaveBeenCalledTimes(1);
     expect(mockResponse.status).toHaveBeenCalledWith(201);
+    expect(mockResponse.json).toHaveBeenCalledWith({sellPtoduct:value});
+
   });
   //   test("Service Mypage 판매중인 상품조회(Error부분)", async () => {
   //     //value 가 존재하지않아 오류 발생할 경우

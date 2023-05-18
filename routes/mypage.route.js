@@ -14,6 +14,9 @@ router.get("/sold", authMiddleware, mypageController.getMySoldProducts);
 // GET: 관심 목록 조회(본인이 좋아요 누른)
 router.get("/likes", authMiddleware, mypageController.getMyLikeProducts);
 
+// GET: 본인정보 목록 조회(email계정 등)
+router.get("/info", authMiddleware, mypageController.getMyInfos);
+
 // 시간 여유 있다면 구현해보기
 // // PATCH: 프로필 개인정보 수정
 // router.patch("/", mypageController.patchMyInfo);
