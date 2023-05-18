@@ -26,6 +26,7 @@ class MypageController {
       next(error, req, res, "구매내역 조회에 실패하였습니다.");
     }
   };
+
   /* 3.자신이 좋아요누른 상품 목록조회 */
   getMyLikeProducts = async (req, res, next) => {
     const { user_id } = res.locals.user;
@@ -33,9 +34,20 @@ class MypageController {
       const getMyLikeProducts = await this.mypageService.getMyLikeProducts(
         user_id
       );
-      return res.status(201).json({ likePtoduct: getMyLikeProducts });
+      return res.status(201).json({ likeProduct: getMyLikeProducts });
     } catch (error) {
       next(error, req, res, "판매 상품 목록 조회에 실패하였습니다.");
+    }
+  };
+
+  /* 4.자신의 정보 목록조회 */
+  getMyInfos = async (req, res, next) => {
+    const { user_id } = res.locals.user;
+    try {
+      const getMyInfos = await this.mypageService.getMyInfos(user_id);
+      return res.status(201).json({ MyInfo: getMyInfos });
+    } catch (error) {
+      next(error, req, res, "내 정보 조회에 오류가 발생하였습니다");
     }
   };
 }
