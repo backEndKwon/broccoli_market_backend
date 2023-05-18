@@ -1,23 +1,28 @@
 const MypageRepository = require("../../../repositories/mypage.repository");
 
-// mocking하기위한 객체 세팅
-let mockMypageSoldBoughtModel = {
+let mockMypageProductsModel = {
+  // repo에서 this.ProductsModel을 대신하는 역할
   findAll: jest.fn(),
 };
-
+let mockMypageLikeModel = {
+  //repo에서 this.LikesModel을 대신하는 역할
+  findAll: jest.fn(),
+};
 //서비스 클래스 인스턴스화
-let mypageRepository = new MypageRepository(mockMypageSoldBoughtModel);
+let mypageRepository = new MypageRepository(
+  mockMypageProductsModel,
+  mockMypageLikeModel
+);
 
 describe("Mypage Repository Unit Test", () => {
   //초기화
   beforeEach(() => {
     jest.resetAllMocks();
   });
-  /*1. 결과값  검증
-    2. product에서 findAll() 메소드를 잘 호출하는지 검증
-    3. 매개변수 검증*/
-  test("Mypage isSold Product Repo findAll Method", async () => {
-    mockMypageSoldBoughtModel.findAll = jest.fn(() => {
+
+  /* 1.판매 중(is_sold = false) 상품 목록조회 */
+  test("Repository Mypage 판매중인 상품조회", async () => {
+    mockMypageProductsModel.findAll = jest.fn(() => {
       return [
         {
           product_id: 1,
@@ -56,13 +61,12 @@ describe("Mypage Repository Unit Test", () => {
       ];
     });
 
-    const isSoldProductAllData = await mypageRepository.getMySoldProducts({
+    const sellProductAllData = await mypageRepository.getMySellingProducts({
       where: { user_id: 1, is_sold: 1 },
     });
 
-    //1번실행인지 검증
-    expect(mockMypageSoldBoughtModel.findAll).toHaveBeenCalledTimes(1);
-    expect(isSoldProductAllData).toEqual([
+    expect(mockMypageProductsModel.findAll).toHaveBeenCalledTimes(1);
+    expect(sellProductAllData).toEqual([
       {
         product_id: 1,
         user_id: 1,
@@ -100,8 +104,9 @@ describe("Mypage Repository Unit Test", () => {
     ]);
   });
 
-  test("Mypage Bought Product Repo findAll Method", async () => {
-    mockMypageSoldBoughtModel.findAll = jest.fn(() => {
+  /* 2.판매완료(is_sold = true) 상품 목록조회 */
+  test("Repository Mypage 판매완료된 상품조회", async () => {
+    mockMypageProductsModel.findAll = jest.fn(() => {
       return [
         {
           product_id: 1,
@@ -140,12 +145,12 @@ describe("Mypage Repository Unit Test", () => {
       ];
     });
 
-    const BoughtProductAllData = await mypageRepository.getMyBuyProducts({
+    const soldProductAllData = await mypageRepository.getMySoldProducts({
       where: { user_id: 1, is_sold: false },
     });
-    //1번실행인지 검증
-    expect(mockMypageSoldBoughtModel.findAll).toHaveBeenCalledTimes(1);
-    expect(BoughtProductAllData).toEqual([
+
+    expect(mockMypageProductsModel.findAll).toHaveBeenCalledTimes(1);
+    expect(soldProductAllData).toEqual([
       {
         product_id: 1,
         user_id: 1,
@@ -181,7 +186,8 @@ describe("Mypage Repository Unit Test", () => {
         updatedAt: "2022-07-26T07:52:09.000Z",
       },
     ]);
-
-    /* 3.자신이 좋아요누른 상품 목록조회 테스트 추가 */
   });
+
+  /* 3.자신이 좋아요누른 상품 목록조회 */
+  //시간적 여유 있을 시 다시 진행
 });
