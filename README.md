@@ -3,7 +3,7 @@
 <a href="https://www.antsori.com"><img src="홈화면이미지링크" style="width:500px;"></a>
 
 ## 🏠 [Home Page Link](링크)
-## 소개 영상 [youtube](링크)
+## 소개 영상 [youtube](https://youtu.be/ltBcH5zUo5g)
 ## 세부 작업 현황 [Notion](https://www.notion.so/f7ce4867fd954ec0bb84a1d7d0befa54)
 <hr>
 <br>
