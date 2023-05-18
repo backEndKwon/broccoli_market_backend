@@ -28,7 +28,9 @@ class AuthService {
   login = async (id) => {
     const user = await this.authRepository.findOneUser(id);
     const accessToken = jwt.sign(
-      { nickname: user.nickname },
+      { nickname: user.nickname,
+        id : user.id
+      },
       process.env.SECRET_KEY,
       {
         expiresIn: process.env.ACCESS_EXPIRES,
@@ -37,7 +39,9 @@ class AuthService {
     const accessObject = { type: "Bearer", token: accessToken };
 
     const refreshToken = jwt.sign(
-      { nickname: user.nickname },
+      { nickname: user.nickname,
+        id : user.id
+      },
       process.env.REFRESH_SECRET_KEY,
       {
         expiresIn: process.env.REFRESH_EXPIRES,
@@ -51,7 +55,9 @@ class AuthService {
   kakaoLogin = async (email) => {
     const user = await this.authRepository.socialFindOneUser(email);
     const accessToken = jwt.sign(
-      { nickname: user.nickname },
+      { nickname: user.nickname,
+        id : user.id
+      },
       process.env.SECRET_KEY,
       {
         expiresIn: process.env.ACCESS_EXPIRES,
@@ -60,7 +66,9 @@ class AuthService {
     const accessObject = { type: "Bearer", token: accessToken };
 
     const refreshToken = jwt.sign(
-      { nickname: user.nickname },
+      { nickname: user.nickname,
+        id : user.id
+      },
       process.env.REFRESH_SECRET_KEY,
       {
         expiresIn: process.env.REFRESH_EXPIRES,
