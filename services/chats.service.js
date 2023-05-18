@@ -1,7 +1,6 @@
 const ChatRepository = require("../repositories/chats.repository");
 const ProductsRepository = require("../repositories/products.repository");
 const { Products, Users, Users_info } = require("../models");
-const { logger } = require("@aws-sdk/smithy-client");
 
 class ChatService {
   chatRepository = new ChatRepository();
@@ -87,10 +86,7 @@ class ChatService {
     try {
       const chatInfo = await this.chatRepository.getOneChatInfo(chat_id);
 
-      if (
-        chatInfo.members[0] !== sender_id &&
-        chatInfo.members[1] !== sender_id
-      ) {
+      if (!chatInfo.members.includes(sender_id)) {
         const error = new Error();
         error.errorCode = 403;
         error.message = "해당 채팅에 대한 권한이 없습니다.";
@@ -121,7 +117,7 @@ class ChatService {
         throw error;
       }
 
-      if (chatInfo.members[0] !== user_id && chatInfo.members[1] !== user_id) {
+      if (!chatInfo.members.includes(user_id)) {
         const error = new Error();
         error.errorCode = 403;
         error.message = "해당 채팅에 대한 권한이 없습니다.";
