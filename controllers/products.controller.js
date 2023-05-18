@@ -1,6 +1,7 @@
 const ProductsService = require("../services/products.service");
 const { productSchema } = require("../middlewares/joi");
 const es = require("@elastic/elasticsearch");
+const jwt = require("jsonwebtoken");
 
 class ProductsController {
   productsService = new ProductsService();
@@ -15,15 +16,15 @@ class ProductsController {
         next(error, req, res, error.message);
       }
 
-        await this.productsService.createProduct(
-          user_id,
-          id,
-          value.title,
-          value.content,
-          value.price,
-          value.category,
-          value.photo_ip
-        );
+      await this.productsService.createProduct(
+        user_id,
+        id,
+        value.title,
+        value.content,
+        value.price,
+        value.category,
+        value.photo_ip
+      );
 
       return res.status(201).json({ message: "상품 생성 완료" });
     } catch (error) {
@@ -45,6 +46,10 @@ class ProductsController {
   // 중고거래 상품 상세 조회
   getDetailProduct = async (req, res, next) => {
     try {
+      const { authorization } = req.cookies;
+      const [authType, authToken] = (authorization ?? "").split(" ");
+      const token = jwt.decode(authToken);
+
       const { product_id } = req.params;
 
       if (product_id === 'search' ||
@@ -52,7 +57,7 @@ class ProductsController {
         return next();
       }
 
-      const product = await this.productsService.findDetailProduct(product_id);
+      const product = await this.productsService.findDetailProduct(token, product_id);
 
       return res.status(200).json({ product });
     } catch (error) {
@@ -108,6 +113,7 @@ class ProductsController {
 
     try {
       await this.productsService.makeProductSold(product_id, user_id);
+
       return res.status(200).json({ message: "상품 거래 완료" });
     } catch (error) {
       next(error, req, res, "상품 거래에 실패하였습니다.");
@@ -191,7 +197,6 @@ class ProductsController {
       }
       
       res.status(200).json(result)
-
     } catch (error) {
       next(error, req, res, '상품 검색에 실패하였습니다.');
     }
@@ -233,7 +238,6 @@ class ProductsController {
       }
       
       res.status(200).json(result)
-
     } catch (error) {
       next(error, req, res, '상품 검색에 실패하였습니다.');
     }
