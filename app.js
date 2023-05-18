@@ -8,6 +8,7 @@ const port = host.port;
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger-output");
 const cors = require("cors");
+const { initSocket } = require("./modules/socket");
 
 // parser
 app.use(express.urlencoded({ extended: false }));
@@ -39,8 +40,11 @@ app.use("/api", [apiMainRouter]);
 // errorHandler
 app.use(errorHandler);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`running http://api.broccoli-market.store:${port}`);
 });
+
+// socket
+initSocket(server);
 
 module.exports = app;

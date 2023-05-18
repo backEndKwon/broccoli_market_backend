@@ -17,15 +17,23 @@ class ChatService {
 
       // 같은 product_id를 가지고, 해당 유저가 이미 채팅을 생성한 경우
       if (existChat && existChat.members[0] === buyer_id) {
-        const error = new Error();
-        error.errorCode = 409;
-        error.message = "이미 채팅이 존재합니다.";
-        throw error;
+        return {
+          errorMessage: "이미 채팅이 존재합니다.",
+          chat_id: existChat._id,
+        };
       }
 
       // seller 정보
       const seller_info =
         await this.productsRepository.findSellerInfoByProductId(product_id);
+
+      // 자기 자신에게 채팅을 생성하는 경우
+      if (seller_info.user_id === buyer_id) {
+        const error = new Error();
+        error.errorCode = 409;
+        error.message = "본인의 중고거래 상품에 대해 채팅을 보낼 수 없습니다.";
+        throw error;
+      }
 
       const createdChat = await this.chatRepository.createNewChat(
         product_id,
@@ -61,6 +69,7 @@ class ChatService {
             chat_id: chat._id,
             updatedAt: chat.updatedAt,
             is_sold: chat.is_sold,
+            seller_nickname: chat.members_nickname[1],
             latestMessage: await this.chatRepository.getLatestMessage(chat._id),
           };
         })
