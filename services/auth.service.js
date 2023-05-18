@@ -73,9 +73,9 @@ class AuthService {
     return findOneUserData;
   };
 
-  socialFindOneUser = async (email) => {
-    const socialFindOneUserData = this.authRepository.socialFindOneUser(email);
-    return socialFindOneUserData;
+  findOneUsers_info = async (email) => {
+    const findOneUserData = this.authRepository.findOneUsers_info(email);
+    return findOneUserData;
   };
 
   logout = async (user_id) => {

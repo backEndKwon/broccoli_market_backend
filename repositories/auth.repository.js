@@ -27,11 +27,11 @@ class AuthRepository {
     return findOneUserData;
   };
 
-  socialFindOneUser = async (email) => {
-    const socialFindOneUserData = await Users_info.findOne({
+  findOneUsers_info = async (email) => {
+    const findOneUserData = await Users_info.findOne({
       where: { email: email },
     });
-    return socialFindOneUserData;
+    return findOneUserData;
   };
 
   findOneByUserId = async (user_id) => {

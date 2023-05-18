@@ -36,7 +36,7 @@ class AuthController {
           });
   
           const data = res2.data;
-          const user = await this.authService.socialFindOneUser(data.kakao_account.email)
+          const user = await this.authService.findOneUsers_info(data.kakao_account.email)
           console.log(res2.data)
           if (!user) {
               res.redirect('http://broccoli-market.store/signup'); // 로컬 테스트 시 'http:://프론트 포트/signup'
@@ -71,7 +71,8 @@ class AuthController {
       try {
         const emailTemplate = await ejs.renderFile(appDir + '/template/authMail.ejs', { authCode: authNum });
         const redisSetResult = await redisClient.SETEX(email, 180, authNum )
-          
+        const existsEmail = await this.authService.findOneUsers_info(email);
+
         const transporter = nodemailer.createTransport({
           service: "naver",
           port: 587,
@@ -81,6 +82,13 @@ class AuthController {
             pass: process.env.NODEMAILER_PASS,
           },
         });
+        
+        if (existsEmail) {
+          res.status(412).json({
+            errorMessage: "중복된 이메일입니다.",
+          });
+          return;
+        }
   
         const emailForm = {
           from: process.env.NODEMAILER_USER,
@@ -115,7 +123,6 @@ class AuthController {
         try {
           const existsId = await this.authService.findOneUser(id);
           const existsUsers = await this.authService.findOneUser(nickname);
-          const existsEmail = await this.authService.findOneUser(email);
           const idFilter = /^[A-Za-z0-9]{3,}$/.test(id);
           const nicknameFilter = /^[A-Za-z0-9]{3,}$/.test(nickname);
           const emailFilter = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+$/.test(email);
@@ -136,13 +143,6 @@ class AuthController {
           if (existsId) {
             res.status(412).json({
               errorMessage: "중복된 아이디입니다.",
-            });
-            return;
-          }
-    
-          if (existsEmail) {
-            res.status(412).json({
-              errorMessage: "중복된 이메일입니다.",
             });
             return;
           }
