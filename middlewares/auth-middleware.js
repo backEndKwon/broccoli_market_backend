@@ -36,8 +36,8 @@ module.exports = async (req, res, next) => {
       );
       const nickname = decodedRefreshToken.nickname;
 
-      const user = await Users.findOne({ where: {nickname} });
-      
+      const user = await Users.findOne({ where: { nickname } });
+
       if (!user) {
         return res.status(401).json({
           errormessage: "리프레시 토큰에 해당하는 사용자가 존재하지 않습니다.",
